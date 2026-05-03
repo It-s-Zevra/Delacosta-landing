@@ -2,7 +2,7 @@
 
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ASSETS } from "@/lib/assets";
 import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
@@ -12,20 +12,29 @@ const EDITORIAL = [0.7, 0, 0.3, 1] as const;
 
 type Phase = "loading" | "exiting" | "done";
 
+function emitLoaderDone() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("loader-done"));
+}
+
 export function Loader() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [minTimeReached, setMinTimeReached] = useState(false);
+  const lockedRef = useRef(false);
 
   const progress = useMotionValue(0);
   const barScale = useTransform(progress, [0, 100], [0, 1]);
 
+  // Skip if already seen this session (and signal SmoothScroll immediately)
   useEffect(() => {
     if (sessionStorage.getItem("delacosta-loader-seen") === "1") {
       setPhase("done");
+      emitLoaderDone();
     }
   }, []);
 
+  // Run progress + min-hold timer
   useEffect(() => {
     if (phase !== "loading") return;
     sessionStorage.setItem("delacosta-loader-seen", "1");
@@ -42,30 +51,41 @@ export function Loader() {
     };
   }, [phase, progress]);
 
+  // Trigger exit when ready
   useEffect(() => {
     if (phase === "loading" && imageLoaded && minTimeReached) {
       setPhase("exiting");
-      const t = setTimeout(() => setPhase("done"), EXIT_MS);
+      const t = setTimeout(() => {
+        setPhase("done");
+        emitLoaderDone();
+      }, EXIT_MS);
       return () => clearTimeout(t);
     }
   }, [phase, imageLoaded, minTimeReached]);
 
-  // Robust scroll lock using shared util (Lenis-aware + html/body)
+  // Idempotent scroll lock — locks once on mount, unlocks once on done/unmount
   useEffect(() => {
     if (phase === "done") {
-      unlockScroll();
+      if (lockedRef.current) {
+        lockedRef.current = false;
+        unlockScroll();
+      }
       return;
     }
-    lockScroll();
-    return () => {
-      unlockScroll();
-    };
+    if (!lockedRef.current) {
+      lockedRef.current = true;
+      lockScroll();
+    }
   }, [phase]);
 
-  // Final safety: when component unmounts, ensure scroll is restored
+  // Final safety: ensure scroll is restored if component is torn down mid-flow
   useEffect(() => {
     return () => {
-      unlockScroll();
+      if (lockedRef.current) {
+        lockedRef.current = false;
+        unlockScroll();
+      }
+      emitLoaderDone();
     };
   }, []);
 
@@ -75,7 +95,6 @@ export function Loader() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-100 overflow-hidden">
-      {/* Top curtain */}
       <motion.div
         className="absolute inset-x-0 top-0 h-[51dvh] bg-navy"
         initial={{ y: "0%" }}
@@ -87,7 +106,6 @@ export function Loader() {
         }}
       />
 
-      {/* Bottom curtain */}
       <motion.div
         className="absolute inset-x-0 bottom-0 h-[51dvh] bg-navy"
         initial={{ y: "0%" }}
@@ -99,7 +117,6 @@ export function Loader() {
         }}
       />
 
-      {/* Centered content */}
       <motion.div
         className="relative z-10 flex h-full flex-col items-center justify-center px-8"
         animate={{
@@ -150,7 +167,6 @@ export function Loader() {
         </motion.p>
       </motion.div>
 
-      {/* Bottom bar: tracked labels + thin progress */}
       <motion.div
         className="absolute inset-x-0 bottom-0 z-10"
         animate={{ opacity: exiting ? 0 : 1 }}

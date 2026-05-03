@@ -10,8 +10,10 @@ let savedScrollY = 0;
 let locked = false;
 
 /**
- * Lock page scroll with the iOS-safe "fixed body" technique.
- * Saves scroll position, freezes body in place, and stops Lenis.
+ * Lock page scroll using the iOS-safe "fixed body" technique.
+ * Saves scroll position and freezes the body in place. Lenis is intentionally
+ * NOT touched here — its lifecycle is managed by SmoothScroll separately so we
+ * don't leave it in an inconsistent state after unlock.
  */
 export function lockScroll() {
   if (typeof document === "undefined" || locked) return;
@@ -24,7 +26,6 @@ export function lockScroll() {
   body.style.right = "0";
   body.style.width = "100%";
   body.style.overflow = "hidden";
-  window.__lenis?.stop();
 }
 
 export function unlockScroll() {
@@ -37,6 +38,9 @@ export function unlockScroll() {
   body.style.right = "";
   body.style.width = "";
   body.style.overflow = "";
+  // Force layout flush before restoring scroll
+  void body.offsetHeight;
   window.scrollTo(0, savedScrollY);
-  window.__lenis?.start();
+  // Tell Lenis to recompute dimensions if it's running
+  window.__lenis?.resize();
 }
