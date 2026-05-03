@@ -5,6 +5,12 @@ import { X } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
+const SIZES = {
+  sm: "md:max-w-md",
+  md: "md:max-w-2xl",
+  lg: "md:max-w-5xl",
+} as const;
+
 export function Modal({
   open,
   onClose,
@@ -14,7 +20,7 @@ export function Modal({
   open: boolean;
   onClose: () => void;
   children: ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: keyof typeof SIZES;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -29,18 +35,12 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  const maxW = {
-    sm: "max-w-md",
-    md: "max-w-2xl",
-    lg: "max-w-5xl",
-  }[size];
-
   return (
     <AnimatePresence>
       {open && (
         <motion.div
           key="modal"
-          className="fixed inset-0 z-90 flex items-center justify-center p-4 md:p-8"
+          className="fixed inset-0 z-90 flex items-stretch justify-center md:items-center md:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -53,7 +53,7 @@ export function Modal({
           />
 
           <motion.div
-            className={`relative w-full ${maxW} max-h-[90vh] overflow-auto bg-cream shadow-[0_30px_80px_-20px_rgba(0,0,0,0.4)]`}
+            className={`relative flex h-full w-full flex-col overflow-hidden bg-cream shadow-[0_30px_80px_-20px_rgba(0,0,0,0.4)] md:h-auto md:max-h-[90dvh] ${SIZES[size]}`}
             initial={{ y: 24, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 16, opacity: 0, scale: 0.98 }}
@@ -62,11 +62,18 @@ export function Modal({
             <button
               aria-label="Cerrar"
               onClick={onClose}
-              className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center bg-cream text-ink transition-colors hover:bg-navy hover:text-cream"
+              className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-cream/95 text-ink shadow-[0_4px_12px_rgba(0,0,0,0.12)] backdrop-blur transition-colors hover:bg-navy hover:text-cream md:right-4 md:top-4"
             >
-              <X size={18} strokeWidth={1.5} />
+              <X size={20} strokeWidth={1.5} />
             </button>
-            {children}
+
+            <div
+              data-lenis-prevent
+              className="flex-1 overflow-y-auto overscroll-contain"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       )}

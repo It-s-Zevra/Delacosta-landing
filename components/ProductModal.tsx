@@ -45,7 +45,7 @@ export function ProductModal({
   return (
     <Modal open={open} onClose={onClose} size="lg">
       <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="relative aspect-square bg-bone md:aspect-auto md:min-h-140">
+        <div className="relative aspect-4/3 bg-bone md:aspect-auto md:min-h-140">
           <Image
             src={producto.img}
             alt={producto.nombre}
@@ -62,22 +62,22 @@ export function ProductModal({
           )}
         </div>
 
-        <div className="flex flex-col p-8 md:p-12">
+        <div className="flex flex-col p-6 pt-8 md:p-12">
           <p className="eyebrow">
             {producto.available ? "Disponible" : "Agotada · vuelve pronto"}
           </p>
-          <h3 className="mt-3 font-display text-3xl text-ink md:text-4xl">
+          <h3 className="mt-3 font-display text-2xl text-ink md:text-4xl">
             {producto.nombre}
           </h3>
-          <p className="mt-2 text-xl font-semibold text-tobacco">
+          <p className="mt-2 text-lg font-semibold text-tobacco md:text-xl">
             {producto.precio}
           </p>
 
-          <div className="my-7 h-px w-12 bg-tobacco/30" />
+          <div className="my-6 h-px w-12 bg-tobacco/30 md:my-7" />
 
           <p className="text-ink/75 leading-relaxed">{producto.descripcion}</p>
 
-          <ul className="mt-7 space-y-2.5">
+          <ul className="mt-6 space-y-2.5 md:mt-7">
             {producto.detalles.map((d) => (
               <li
                 key={d}
@@ -94,7 +94,7 @@ export function ProductModal({
           </ul>
 
           {producto.variantes && producto.available && (
-            <div className="mt-8">
+            <div className="mt-7 md:mt-8">
               <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-tobacco">
                 Largo de cadena
               </p>
@@ -117,7 +117,7 @@ export function ProductModal({
             </div>
           )}
 
-          <div className="mt-auto pt-10">
+          <div className="mt-10">
             <a
               href={whatsappLink(message)}
               target="_blank"
