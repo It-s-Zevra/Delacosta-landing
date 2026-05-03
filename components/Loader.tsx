@@ -4,9 +4,10 @@ import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ASSETS } from "@/lib/assets";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
 const MIN_HOLD_MS = 2400;
-const EXIT_MS = 1500;
+const EXIT_MS = 1700;
 const EDITORIAL = [0.7, 0, 0.3, 1] as const;
 
 type Phase = "loading" | "exiting" | "done";
@@ -19,14 +20,12 @@ export function Loader() {
   const progress = useMotionValue(0);
   const barScale = useTransform(progress, [0, 100], [0, 1]);
 
-  // Skip if already seen this session
   useEffect(() => {
     if (sessionStorage.getItem("delacosta-loader-seen") === "1") {
       setPhase("done");
     }
   }, []);
 
-  // Run progress + min-hold timer
   useEffect(() => {
     if (phase !== "loading") return;
     sessionStorage.setItem("delacosta-loader-seen", "1");
@@ -43,7 +42,6 @@ export function Loader() {
     };
   }, [phase, progress]);
 
-  // Trigger exit when ready
   useEffect(() => {
     if (phase === "loading" && imageLoaded && minTimeReached) {
       setPhase("exiting");
@@ -52,29 +50,36 @@ export function Loader() {
     }
   }, [phase, imageLoaded, minTimeReached]);
 
-  // Lock scroll
+  // Robust scroll lock using shared util (Lenis-aware + html/body)
   useEffect(() => {
-    if (phase !== "done") {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (phase === "done") {
+      unlockScroll();
+      return;
     }
+    lockScroll();
     return () => {
-      document.body.style.overflow = "";
+      unlockScroll();
     };
   }, [phase]);
+
+  // Final safety: when component unmounts, ensure scroll is restored
+  useEffect(() => {
+    return () => {
+      unlockScroll();
+    };
+  }, []);
 
   if (phase === "done") return null;
 
   const exiting = phase === "exiting";
 
   return (
-    <div className="fixed inset-0 z-100 pointer-events-none overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-100 overflow-hidden">
       {/* Top curtain */}
       <motion.div
-        className="absolute inset-x-0 top-0 h-1/2 bg-navy"
+        className="absolute inset-x-0 top-0 h-[51dvh] bg-navy"
         initial={{ y: "0%" }}
-        animate={{ y: exiting ? "-100%" : "0%" }}
+        animate={{ y: exiting ? "-101%" : "0%" }}
         transition={{
           duration: 1.1,
           delay: exiting ? 0.45 : 0,
@@ -84,9 +89,9 @@ export function Loader() {
 
       {/* Bottom curtain */}
       <motion.div
-        className="absolute inset-x-0 bottom-0 h-1/2 bg-navy"
+        className="absolute inset-x-0 bottom-0 h-[51dvh] bg-navy"
         initial={{ y: "0%" }}
-        animate={{ y: exiting ? "100%" : "0%" }}
+        animate={{ y: exiting ? "101%" : "0%" }}
         transition={{
           duration: 1.1,
           delay: exiting ? 0.45 : 0,

@@ -16,6 +16,8 @@ export function SmoothScroll() {
       smoothWheel: true,
     });
 
+    window.__lenis = lenis;
+
     let rafId = 0;
     function raf(time: number) {
       lenis.raf(time);
@@ -26,6 +28,7 @@ export function SmoothScroll() {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      delete window.__lenis;
     };
   }, []);
 

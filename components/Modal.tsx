@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
 export function Modal({
   open,
@@ -20,10 +21,10 @@ export function Modal({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    document.body.style.overflow = "hidden";
+    lockScroll();
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      unlockScroll();
       window.removeEventListener("keydown", onKey);
     };
   }, [open, onClose]);
