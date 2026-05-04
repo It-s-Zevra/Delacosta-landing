@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowUp, Mail, MessageCircle } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Mail, MessageCircle } from "lucide-react";
 import { ASSETS } from "@/lib/assets";
 import { InstagramIcon, TikTokIcon } from "@/components/icons/Social";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
@@ -179,6 +179,33 @@ export function Footer() {
               />
             </a>
           </div>
+        </div>
+
+        {/* Studio credit */}
+        <div className="mt-12 flex justify-center border-t border-cream/10 pt-8">
+          <a
+            href="https://zevraz.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-2.5 text-[10.5px] font-medium uppercase tracking-[0.22em] text-cream/45 transition-colors hover:text-cream/95"
+          >
+            <span>Diseño y desarrollo</span>
+            <span className="relative inline-block h-5 w-5 overflow-hidden rounded-[3px]">
+              <Image
+                src="/zevra-mark.png"
+                alt="Zevra"
+                fill
+                sizes="20px"
+                className="object-contain"
+              />
+            </span>
+            <span>Zevra</span>
+            <ArrowUpRight
+              size={11}
+              strokeWidth={1.5}
+              className="-mr-1 opacity-0 transition-opacity group-hover:opacity-100"
+            />
+          </a>
         </div>
       </div>
     </footer>
