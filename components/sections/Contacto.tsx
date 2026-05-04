@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowRight,
   Calendar,
   Check,
+  Clock,
   Loader2,
   Mail,
   MessageCircle,
@@ -23,6 +24,61 @@ const TIPOS = [
   "Prensa / Colaboraciones",
   "Otra consulta",
 ];
+
+const MAX_SUBMISSIONS = 2;
+const COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+const COUNT_KEY = "delacosta-form-count";
+const COOLDOWN_KEY = "delacosta-form-cooldown-until";
+
+function readCount() {
+  if (typeof window === "undefined") return 0;
+  try {
+    return Number(window.localStorage.getItem(COUNT_KEY) || "0") || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function readCooldownUntil() {
+  if (typeof window === "undefined") return 0;
+  try {
+    return Number(window.localStorage.getItem(COOLDOWN_KEY) || "0") || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function writeCount(n: number) {
+  try {
+    window.localStorage.setItem(COUNT_KEY, String(n));
+  } catch {
+    /* no-op */
+  }
+}
+
+function writeCooldown(until: number) {
+  try {
+    window.localStorage.setItem(COOLDOWN_KEY, String(until));
+  } catch {
+    /* no-op */
+  }
+}
+
+function clearLimit() {
+  try {
+    window.localStorage.removeItem(COUNT_KEY);
+    window.localStorage.removeItem(COOLDOWN_KEY);
+  } catch {
+    /* no-op */
+  }
+}
+
+function formatTimeLeft(ms: number) {
+  const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
 
 type FormState = {
   nombre: string;
@@ -163,6 +219,34 @@ function ContactForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [successOpen, setSuccessOpen] = useState(false);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+
+  // Hydrate cooldown from localStorage on mount
+  useEffect(() => {
+    const until = readCooldownUntil();
+    if (until > Date.now()) {
+      setCooldownUntil(until);
+    } else if (until > 0) {
+      // expired
+      clearLimit();
+    }
+  }, []);
+
+  // Tick every second while cooldown is active
+  useEffect(() => {
+    if (!cooldownUntil) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [cooldownUntil]);
+
+  // Auto-unlock when cooldown ends
+  useEffect(() => {
+    if (cooldownUntil && cooldownUntil <= now) {
+      clearLimit();
+      setCooldownUntil(0);
+    }
+  }, [cooldownUntil, now]);
 
   const update = (k: keyof FormState, v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -170,6 +254,7 @@ function ContactForm() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!form.nombre || !form.email || !form.mensaje) return;
+    if (cooldownUntil > Date.now()) return; // safety guard
     setStatus("loading");
     setErrorMsg("");
     try {
@@ -192,6 +277,15 @@ function ContactForm() {
       setStatus("idle");
       setForm(INITIAL_FORM);
       setSuccessOpen(true);
+
+      // Increment count and lock if at limit
+      const newCount = readCount() + 1;
+      writeCount(newCount);
+      if (newCount >= MAX_SUBMISSIONS) {
+        const until = Date.now() + COOLDOWN_MS;
+        writeCooldown(until);
+        setCooldownUntil(until);
+      }
     } catch (err) {
       setStatus("error");
       setErrorMsg(
@@ -203,6 +297,16 @@ function ContactForm() {
   };
 
   const loading = status === "loading";
+  const locked = cooldownUntil > now;
+
+  if (locked) {
+    return (
+      <>
+        <FormLocked msLeft={cooldownUntil - now} />
+        <SuccessModal open={successOpen} onClose={() => setSuccessOpen(false)} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -305,6 +409,58 @@ function ContactForm() {
 
       <SuccessModal open={successOpen} onClose={() => setSuccessOpen(false)} />
     </>
+  );
+}
+
+function FormLocked({ msLeft }: { msLeft: number }) {
+  return (
+    <div className="flex flex-col items-center border border-tobacco/25 bg-bone p-8 text-center md:p-12">
+      <span className="flex h-14 w-14 items-center justify-center rounded-full border border-tobacco/30 text-tobacco">
+        <Clock size={24} strokeWidth={1.5} />
+      </span>
+
+      <p className="eyebrow mt-7 text-tobacco">Pausa breve</p>
+      <h3 className="mt-3 font-display text-2xl text-ink md:text-3xl">
+        Recibimos tus mensajes,
+        <br />
+        <em className="italic text-navy">danos un momento.</em>
+      </h3>
+
+      <p className="mt-5 max-w-sm text-ink/70">
+        Para evitar spam, el formulario acepta hasta {MAX_SUBMISSIONS} envíos
+        por hora. Vuelve a estar disponible en:
+      </p>
+
+      <div className="mt-7 flex flex-col items-center">
+        <p className="font-display text-5xl tabular-nums text-navy md:text-6xl">
+          {formatTimeLeft(msLeft)}
+        </p>
+        <p className="mt-2 text-[10.5px] font-medium uppercase tracking-[0.22em] text-tobacco/70">
+          minutos · segundos
+        </p>
+      </div>
+
+      <div className="my-8 h-px w-12 bg-tobacco/30" />
+
+      <p className="max-w-sm text-sm text-ink/70">
+        ¿Necesitas respuesta ahora? Escríbenos directo por WhatsApp y te
+        atendemos al instante.
+      </p>
+
+      <a
+        href={whatsappLink(WA_MESSAGES.generic)}
+        target="_blank"
+        rel="noreferrer"
+        className="group mt-6 inline-flex w-full items-center justify-center gap-3 bg-navy px-6 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink"
+      >
+        Escribir por WhatsApp
+        <ArrowRight
+          size={16}
+          strokeWidth={1.5}
+          className="transition-transform group-hover:translate-x-1"
+        />
+      </a>
+    </div>
   );
 }
 
