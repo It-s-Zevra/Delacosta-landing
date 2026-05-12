@@ -61,14 +61,19 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Editorial overlays: side wash + bottom anchor + soft vignette */}
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-ink/75 via-ink/30 to-transparent md:from-ink/65 md:via-ink/15 md:to-45%" />
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/55 via-transparent to-ink/10" />
+      {/* Editorial overlays: smooth horizontal wash + soft bottom anchor */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 30% 60%, transparent 0%, rgba(0,0,0,0.25) 90%)",
+            "linear-gradient(to right, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.55) 25%, rgba(10,10,10,0.28) 55%, rgba(10,10,10,0.08) 85%, rgba(10,10,10,0) 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.15) 35%, rgba(10,10,10,0) 70%)",
         }}
       />
 
