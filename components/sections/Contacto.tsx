@@ -3,7 +3,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowRight,
-  Calendar,
   Check,
   Clock,
   Loader2,
@@ -118,9 +117,12 @@ export function Contacto() {
 function ContactList() {
   return (
     <div>
-      <p className="eyebrow">08 · Escríbenos</p>
+      <p className="eyebrow">05 · Escríbenos</p>
       <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink">
-        ¿Una <em className="font-normal italic text-navy">consulta?</em>
+        ¿Una{" "}
+        <span className="font-body text-[0.78em] font-light tracking-tight text-navy">
+          consulta?
+        </span>
         <br />
         Estamos cerca.
       </h2>
@@ -167,28 +169,6 @@ function ContactList() {
               <span className="text-ink/70">delacostastudio@gmail.com</span>
             </span>
           </a>
-        </li>
-
-        <li
-          aria-disabled
-          className="flex cursor-not-allowed items-start gap-5 opacity-60"
-        >
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center border border-tobacco/20 text-tobacco/60">
-            <Calendar size={20} strokeWidth={1.4} />
-          </span>
-          <span>
-            <span className="flex flex-wrap items-center gap-2">
-              <strong className="font-display text-xl text-ink/75">
-                Agendar reunión
-              </strong>
-              <span className="bg-crimson/10 px-2 py-0.5 text-[9.5px] font-medium uppercase tracking-[0.18em] text-crimson">
-                Próximamente
-              </span>
-            </span>
-            <span className="mt-0.5 block text-sm text-ink/55">
-              Asesoría virtual con el equipo
-            </span>
-          </span>
         </li>
 
         <li>
@@ -423,7 +403,9 @@ function FormLocked({ msLeft }: { msLeft: number }) {
       <h3 className="mt-3 font-display text-2xl text-ink md:text-3xl">
         Recibimos tus mensajes,
         <br />
-        <em className="italic text-navy">danos un momento.</em>
+        <span className="font-body text-[0.78em] font-light tracking-tight text-navy">
+          danos un momento.
+        </span>
       </h3>
 
       <p className="mt-5 max-w-sm text-ink/70">
@@ -481,7 +463,9 @@ function SuccessModal({
         <p className="eyebrow mt-7">Mensaje recibido</p>
         <h3 className="mt-3 font-display text-3xl text-ink md:text-4xl">
           ¡Listo!{" "}
-          <em className="italic text-navy">Te respondemos pronto.</em>
+          <span className="font-body text-[0.62em] font-light tracking-tight text-navy">
+            Te respondemos pronto.
+          </span>
         </h3>
 
         <p className="mt-5 max-w-sm text-ink/70">

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight } from "lucide-react";
 import { ASSETS } from "@/lib/assets";
 
 const reveal = {
@@ -17,156 +16,94 @@ export function Hero() {
     target: ref,
     offset: ["start start", "end start"],
   });
-  const yMain = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
-  const yDetail = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
+  const yImage = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
 
   return (
     <section
       ref={ref}
       id="inicio"
-      className="relative overflow-hidden bg-cream"
+      className="relative overflow-hidden bg-bone"
     >
-      <svg
-        className="pointer-events-none absolute -right-24 top-1/3 hidden h-120 w-120 text-tobacco/15 md:block"
-        viewBox="0 0 200 200"
-        fill="none"
-        aria-hidden
+      <motion.div
+        initial={{ clipPath: "inset(0 0 100% 0)" }}
+        animate={{ clipPath: "inset(0 0 0% 0)" }}
+        transition={{ duration: 1.3, delay: 0.2, ease: [0.7, 0, 0.3, 1] }}
+        className="relative h-[78svh] min-h-130 w-full overflow-hidden md:h-[88svh] md:min-h-160"
       >
-        <motion.path
-          d="M20,100 Q60,20 100,100 T180,100"
-          stroke="currentColor"
-          strokeWidth="0.6"
-          fill="none"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 2, delay: 0.6, ease: [0.7, 0, 0.3, 1] }}
-        />
-      </svg>
-
-      <div className="container-editorial grid grid-cols-1 items-center gap-14 py-16 md:grid-cols-12 md:gap-10 md:py-24 lg:py-32">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          transition={{ staggerChildren: 0.12, delayChildren: 0.2 }}
-          className="md:col-span-6"
-        >
-          <motion.p
-            variants={reveal}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="eyebrow"
-          >
-            Joyas hechas a mano · Chile 2026
-          </motion.p>
-
-          <motion.h1
-            variants={reveal}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 font-display text-[clamp(2.75rem,7.5vw,6.25rem)] leading-[0.94] text-ink"
-          >
-            TÚ ERES
-            <br />
-            LA{" "}
-            <span className="relative inline-block">
-              <em className="font-normal italic text-navy">ocasión.</em>
-              <motion.span
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  delay: 1.4,
-                  duration: 0.95,
-                  ease: [0.7, 0, 0.3, 1],
-                }}
-                className="absolute -bottom-1 left-0 right-2 block h-px origin-left bg-crimson"
-              />
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={reveal}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 max-w-md text-base text-ink/70 md:text-[17px]"
-          >
-            Joyas únicas creadas por chilenas, para ti. Diseños hechos a mano que
-            acompañan tu día a día. No necesitas una razón especial para sentirte
-            tú.
-          </motion.p>
-
-          <motion.div
-            variants={reveal}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-10 flex flex-wrap items-center gap-6"
-          >
-            <a
-              href="#catalogo"
-              className="group inline-flex items-center gap-3 bg-navy px-8 py-4 text-[12px] font-medium uppercase tracking-[0.16em] text-cream transition-all hover:bg-ink"
-            >
-              Ver catálogo
-              <ArrowRight
-                size={16}
-                strokeWidth={1.5}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </a>
-            <a
-              href="#cuidados"
-              className="group relative pb-1 text-[12px] font-medium uppercase tracking-[0.16em] text-tobacco transition-colors hover:text-crimson"
-            >
-              Nuestro proceso
-              <span className="absolute bottom-0 left-0 h-px w-full origin-left bg-tobacco transition-colors group-hover:bg-crimson" />
-            </a>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.8, duration: 0.8 }}
-            className="mt-16 flex items-center gap-3 text-[10.5px] font-medium uppercase tracking-[0.3em] text-tobacco/70 md:mt-20"
-          >
-            <span className="block h-px w-8 bg-tobacco/40" />
-            scroll para descubrir
-          </motion.div>
+        <motion.div style={{ y: yImage }} className="absolute inset-0">
+          <Image
+            src={ASSETS.hero.body}
+            alt="Delacosta Studio · joyas hechas a mano en Chile"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[78%_center] md:object-[72%_center]"
+          />
         </motion.div>
 
-        <div className="relative md:col-span-6">
+        {/* Dark wash on the left to keep typography legible over the negative space */}
+        <div className="absolute inset-0 bg-linear-to-r from-ink/65 via-ink/25 to-transparent md:from-ink/55 md:via-ink/15 md:to-30%" />
+        {/* Bottom fade for mobile readability + transition into next section */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-linear-to-b from-transparent via-ink/15 to-bone/85 md:h-32 md:via-transparent" />
+
+        <div className="container-editorial relative flex h-full flex-col justify-end pb-16 md:pb-24 lg:pb-28">
           <motion.div
-            initial={{ clipPath: "inset(0 0 100% 0)" }}
-            animate={{ clipPath: "inset(0 0 0% 0)" }}
-            transition={{ duration: 1.3, delay: 0.3, ease: [0.7, 0, 0.3, 1] }}
-            className="relative aspect-4/5 w-full overflow-hidden bg-stone"
+            initial="hidden"
+            animate="visible"
+            transition={{ staggerChildren: 0.14, delayChildren: 0.6 }}
+            className="max-w-2xl"
           >
-            <motion.div style={{ y: yMain }} className="absolute inset-0">
-              <Image
-                src={ASSETS.hero.body}
-                alt="Modelo Delacosta Studio"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
+            <motion.h1
+              variants={reveal}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="font-display text-[clamp(2.5rem,7vw,6rem)] leading-[0.95] text-cream"
+            >
+              TÚ ERES
+              <br />
+              LA{" "}
+              <span className="relative inline-block">
+                <span className="font-body text-[0.78em] font-light tracking-tight text-cream/95">
+                  ocasión.
+                </span>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{
+                    delay: 1.5,
+                    duration: 0.95,
+                    ease: [0.7, 0, 0.3, 1],
+                  }}
+                  className="absolute -bottom-1 left-0 right-2 block h-px origin-left bg-crimson"
+                />
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={reveal}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-7 max-w-md text-[15px] text-cream/85 md:text-[17px]"
+            >
+              Joyas únicas creadas por chilenas, para ti. Diseños hechos a mano
+              que acompañan tu día a día. No necesitas una razón especial para
+              sentirte tú.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.9, duration: 0.8 }}
+              className="mt-10 flex items-center gap-3 text-[10.5px] font-medium uppercase tracking-[0.3em] text-cream/75"
+            >
+              <span className="block h-px w-8 bg-cream/55" />
+              scroll para descubrir
             </motion.div>
           </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            style={{ y: yDetail }}
-            className="absolute -bottom-8 -left-6 aspect-square w-[44%] overflow-hidden bg-bone shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] md:-bottom-12 md:-left-12 md:w-[42%]"
-          >
-            <Image
-              src={ASSETS.hero.detail}
-              alt="Detalle de pieza Delacosta"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover"
-            />
-          </motion.div>
-
-          <span className="absolute right-0 top-4 hidden origin-top-right rotate-90 text-[11px] font-medium uppercase tracking-[0.3em] text-tobacco md:block">
-            S/S 2026 · Lookbook
-          </span>
         </div>
-      </div>
+
+        <span className="absolute right-5 top-6 hidden origin-top-right rotate-90 text-[11px] font-medium uppercase tracking-[0.3em] text-cream/80 md:right-8 md:block">
+          S/S 2026 · Lookbook
+        </span>
+      </motion.div>
     </section>
   );
 }

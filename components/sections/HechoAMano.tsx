@@ -1,18 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
-import { Plus, Sparkles } from "lucide-react";
-import { ASSETS } from "@/lib/assets";
+import { Plus } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { cn } from "@/lib/cn";
-
-const PROCESO = [
-  "Diseño original",
-  "Materiales seleccionados (perlas de río, baño en oro/plata)",
-  "Confeccionada a mano",
-  "Empacada con cuidado",
-];
 
 const CUIDADOS = [
   {
@@ -46,65 +37,37 @@ export function HechoAMano() {
   return (
     <section
       id="cuidados"
-      className="container-editorial grid grid-cols-1 gap-20 py-24 md:py-32 lg:grid-cols-2 lg:gap-16"
+      className="container-editorial grid grid-cols-1 gap-14 py-24 md:py-32 lg:grid-cols-12 lg:gap-16"
     >
-      <Reveal>
-        <div>
-          <p className="eyebrow">03 · Proceso</p>
-          <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.25rem)] leading-[1.05] text-ink">
-            Cada pieza pasa por
-            <br />
-            <em className="font-normal italic text-navy">manos chilenas.</em>
-          </h2>
-          <p className="mt-6 max-w-md text-ink/70 text-balance">
-            No producimos en masa. Cada anillo, cada par de aros, cada collar es
-            ensamblado manualmente por nuestro equipo en Chile. Cuando compras
-            una pieza Delacosta, compras horas de trabajo cuidadoso.
-          </p>
-          <ul className="mt-10 space-y-3.5">
-            {PROCESO.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-ink">
-                <Sparkles
-                  size={16}
-                  strokeWidth={1.5}
-                  className="mt-1 shrink-0 text-crimson"
-                />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="relative mt-12 aspect-4/5 w-full overflow-hidden bg-stone md:aspect-square">
-            <Image
-              src={ASSETS.proceso}
-              alt="Proceso de confección Delacosta"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </Reveal>
-
-      <Reveal delay={0.15}>
-        <div>
-          <p className="eyebrow">04 · Cuidados</p>
+      <Reveal className="lg:col-span-5">
+        <div className="lg:sticky lg:top-28">
+          <p className="eyebrow">03 · Cuidados</p>
           <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.25rem)] leading-[1.05] text-ink">
             Para que duren
             <br />
-            <em className="font-normal italic text-navy">contigo.</em>
+            <span className="font-body text-[0.7em] font-light tracking-tight text-navy">
+              contigo.
+            </span>
           </h2>
-          <ul className="mt-10 divide-y divide-tobacco/15 border-y border-tobacco/15">
-            {CUIDADOS.map((c, i) => (
-              <CuidadoItem key={c.titulo} {...c} index={i} />
-            ))}
-          </ul>
+          <p className="mt-6 max-w-md text-ink/70">
+            Las joyas hechas a mano necesitan rutinas suaves. Sigue estos cinco
+            cuidados y tus piezas mantendrán su brillo por mucho más tiempo.
+          </p>
           <a
-            href="#faq"
+            href="/preguntas-frecuentes"
             className="mt-10 inline-flex border-b border-navy pb-1 text-[12px] font-medium uppercase tracking-[0.18em] text-navy hover:text-crimson hover:border-crimson"
           >
             Ver guía completa de cuidados →
           </a>
         </div>
+      </Reveal>
+
+      <Reveal delay={0.15} className="lg:col-span-7">
+        <ul className="divide-y divide-tobacco/15 border-y border-tobacco/15">
+          {CUIDADOS.map((c, i) => (
+            <CuidadoItem key={c.titulo} {...c} index={i} />
+          ))}
+        </ul>
       </Reveal>
     </section>
   );
@@ -124,24 +87,27 @@ function CuidadoItem({
     <li>
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left"
+        className="flex w-full items-center justify-between gap-4 py-6 text-left"
       >
         <span className="flex items-center gap-5">
           <span className="font-display text-sm text-tobacco/60">
             {String(index + 1).padStart(2, "0")}
           </span>
-          <span className="font-display text-lg text-ink">{titulo}</span>
+          <span className="font-display text-lg text-ink md:text-xl">{titulo}</span>
         </span>
         <Plus
           size={18}
           strokeWidth={1.4}
-          className={cn("shrink-0 text-tobacco transition-transform duration-300", open && "rotate-45")}
+          className={cn(
+            "shrink-0 text-tobacco transition-transform duration-300",
+            open && "rotate-45",
+          )}
         />
       </button>
       <div
         className={cn(
           "grid overflow-hidden text-ink/70 transition-all duration-500 ease-editorial",
-          open ? "grid-rows-[1fr] pb-5" : "grid-rows-[0fr]",
+          open ? "grid-rows-[1fr] pb-6" : "grid-rows-[0fr]",
         )}
       >
         <div className="overflow-hidden">

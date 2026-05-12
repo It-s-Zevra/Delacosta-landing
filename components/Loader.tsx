@@ -161,7 +161,7 @@ export function Loader() {
             y: imageLoaded ? 0 : 8,
           }}
           transition={{ duration: 0.7, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 font-display text-base italic text-cream/85 md:text-lg"
+          className="mt-6 font-body text-sm font-light tracking-[0.08em] text-cream/80 md:text-base"
         >
           Tú eres la ocasión
         </motion.p>

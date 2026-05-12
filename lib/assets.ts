@@ -10,7 +10,7 @@ export const ASSETS = {
       "https://res.cloudinary.com/dg1x0cwdc/image/upload/v1777812566/icoJ4_ejdmyh.png",
   },
   hero: {
-    body: "https://res.cloudinary.com/dg1x0cwdc/image/upload/v1777812559/ChatGPT_Image_3_may_2026_08_34_05_iosaed.png",
+    body: "https://res.cloudinary.com/dg1x0cwdc/image/upload/v1778593191/ChatGPT_Image_12_may_2026_09_38_48_bunymn.png",
     detail:
       "https://res.cloudinary.com/dg1x0cwdc/image/upload/v1777812560/ChatGPT_Image_3_may_2026_08_34_49_od2ekc.png",
   },

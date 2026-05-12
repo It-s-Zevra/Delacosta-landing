@@ -18,9 +18,12 @@ export function Instagram() {
       <Reveal>
         <header className="mb-12 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="eyebrow">06 · @delacosta.studio</p>
+            <p className="eyebrow">04 · @delacosta.studio</p>
             <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink">
-              Síguenos en <em className="font-normal italic text-navy">Instagram.</em>
+              Síguenos en{" "}
+              <span className="font-body text-[0.78em] font-light tracking-tight text-navy">
+                Instagram.
+              </span>
             </h2>
           </div>
           <a

@@ -22,12 +22,14 @@ export function CartModal({
         <h3 className="mt-4 font-display text-3xl text-ink md:text-4xl">
           Pronto podrás comprar
           <br />
-          <em className="italic text-navy">directo aquí.</em>
+          <span className="font-body text-[0.62em] font-light tracking-tight text-navy">
+            directo aquí.
+          </span>
         </h3>
 
         <p className="mt-6 max-w-sm text-ink/70">
-          Estamos terminando la integración con Webpay y Mercado Pago. Mientras
-          tanto, escríbenos por WhatsApp y coordinamos tu pedido al instante.
+          Estamos terminando la integración con Mercado Pago. Mientras tanto,
+          escríbenos por WhatsApp y coordinamos tu pedido al instante.
         </p>
 
         <a

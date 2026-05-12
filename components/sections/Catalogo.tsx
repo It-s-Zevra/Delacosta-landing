@@ -97,7 +97,10 @@ export function Catalogo() {
             <div className="max-w-xl">
               <p className="eyebrow">01 · Colección</p>
               <h2 className="mt-4 font-display text-[clamp(2.25rem,4.5vw,3.75rem)] leading-[1.05] text-ink">
-                Cada pieza, <em className="font-normal italic text-navy">única.</em>
+                Cada pieza,{" "}
+                <span className="font-body text-[0.7em] font-light tracking-tight text-navy">
+                  única.
+                </span>
               </h2>
               <p className="mt-5 text-ink/70 text-balance">
                 Diseñadas y confeccionadas a mano. Hoy contamos con dos piezas
@@ -131,7 +134,7 @@ export function Catalogo() {
 
         {totalVisible === 0 ? (
           <div className="border-y border-tobacco/20 py-20 text-center">
-            <p className="font-display text-2xl italic text-ink/70">
+            <p className="font-body text-lg font-light text-ink/70">
               Aún no hay piezas en esta categoría.
             </p>
             <button
@@ -186,7 +189,7 @@ export function Catalogo() {
                   >
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                       <Lock size={20} strokeWidth={1.4} className="text-tobacco/60" />
-                      <span className="mt-4 font-display text-2xl italic text-navy">
+                      <span className="mt-4 font-body text-base font-light tracking-wide text-navy">
                         Próximamente
                       </span>
                       <span className="mt-2 text-[10px] font-medium uppercase tracking-[0.2em] text-tobacco">
@@ -210,7 +213,7 @@ export function Catalogo() {
 
         <Reveal>
           <div className="mt-20 border-t border-tobacco/20 pt-10 text-center">
-            <p className="font-display text-2xl italic text-ink/80">
+            <p className="font-display text-2xl text-ink/80">
               Estamos ampliando la colección.
             </p>
             <p className="mt-3 text-sm text-ink/60">

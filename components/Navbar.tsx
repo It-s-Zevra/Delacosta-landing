@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Mail, Menu, MessageCircle, ShoppingBag, X } from "lucide-react";
@@ -10,10 +11,11 @@ import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
 
 const NAV = [
-  { label: "Catálogo", href: "#catalogo" },
-  { label: "Colecciones", href: "#colecciones" },
-  { label: "Cuidados", href: "#cuidados" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Catálogo", href: "/#catalogo" },
+  { label: "Proceso", href: "/#proceso" },
+  { label: "Cuidados", href: "/#cuidados" },
+  { label: "Preguntas", href: "/preguntas-frecuentes" },
+  { label: "Contacto", href: "/#contacto" },
 ];
 
 const EDITORIAL = [0.7, 0, 0.3, 1] as const;
@@ -55,25 +57,25 @@ export function Navbar() {
             <Menu size={22} strokeWidth={1.4} />
           </button>
 
-          <a href="#inicio" className="block leading-none">
+          <Link href="/#inicio" className="block text-center leading-none">
             <span className="block font-display text-[20px] font-medium tracking-[0.18em] text-ink md:text-[22px]">
               DELACOSTA
             </span>
-            <span className="mt-1 block text-[8.5px] font-medium tracking-[0.5em] text-tobacco">
+            <span className="mt-1 block pl-[0.5em] text-[8.5px] font-medium tracking-[0.5em] text-tobacco">
               STUDIO
             </span>
-          </a>
+          </Link>
 
-          <ul className="hidden items-center gap-9 md:flex">
+          <ul className="hidden items-center gap-8 md:flex">
             {NAV.map((item) => (
               <li key={item.href}>
-                <a
+                <Link
                   href={item.href}
                   className="group relative text-[12px] font-medium uppercase tracking-[0.16em] text-ink/80 transition-colors hover:text-navy"
                 >
                   {item.label}
                   <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-navy transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -124,14 +126,14 @@ function MobileMenu({ close }: { close: () => void }) {
       <div className="relative z-10 flex flex-1 flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
-          <a href="#inicio" onClick={close} className="block leading-none">
+          <Link href="/#inicio" onClick={close} className="block text-center leading-none">
             <span className="block font-display text-[18px] font-medium tracking-[0.18em] text-ink">
               DELACOSTA
             </span>
-            <span className="mt-1 block text-[7.5px] font-medium tracking-[0.5em] text-tobacco">
+            <span className="mt-1 block pl-[0.5em] text-[7.5px] font-medium tracking-[0.5em] text-tobacco">
               STUDIO
             </span>
-          </a>
+          </Link>
           <button
             aria-label="Cerrar menú"
             onClick={close}
@@ -159,7 +161,7 @@ function MobileMenu({ close }: { close: () => void }) {
                   ease: EDITORIAL,
                 }}
               >
-                <a
+                <Link
                   href={item.href}
                   onClick={close}
                   className="group flex items-baseline gap-5"
@@ -170,7 +172,7 @@ function MobileMenu({ close }: { close: () => void }) {
                   <span className="font-display text-[clamp(2.5rem,11vw,4rem)] leading-none text-ink transition-colors group-hover:text-navy">
                     {item.label}
                   </span>
-                </a>
+                </Link>
               </motion.li>
             ))}
           </ul>
@@ -212,7 +214,7 @@ function MobileMenu({ close }: { close: () => void }) {
                 <TikTokIcon size={15} />
               </SocialBtn>
             </div>
-            <p className="font-display text-xs italic text-ink/60">
+            <p className="font-body text-[11px] font-light tracking-[0.04em] text-ink/60">
               Tú eres la ocasión
             </p>
           </div>

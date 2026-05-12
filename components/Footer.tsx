@@ -1,15 +1,16 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUp, ArrowUpRight, Mail, MessageCircle } from "lucide-react";
 import { ASSETS } from "@/lib/assets";
 import { InstagramIcon, TikTokIcon } from "@/components/icons/Social";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
 
 const NAV = [
-  { label: "Catálogo", href: "#catalogo" },
-  { label: "Colecciones", href: "#colecciones" },
-  { label: "Cuidados", href: "#cuidados" },
-  { label: "Preguntas frecuentes", href: "#faq" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Catálogo", href: "/#catalogo" },
+  { label: "Proceso", href: "/#proceso" },
+  { label: "Cuidados", href: "/#cuidados" },
+  { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
+  { label: "Contacto", href: "/#contacto" },
 ];
 
 export function Footer() {
@@ -31,10 +32,13 @@ export function Footer() {
         {/* Statement */}
         <div className="border-b border-cream/12 pb-14 md:pb-16">
           <p className="eyebrow text-cream/55">Manifesto</p>
-          <p className="mt-5 max-w-3xl font-display text-[clamp(2rem,5.5vw,4.5rem)] italic leading-[0.95] text-cream">
+          <p className="mt-5 max-w-3xl font-display text-[clamp(2rem,5.5vw,4.5rem)] leading-[0.95] text-cream">
             Tú eres
             <br />
-            la <span className="text-cream/60">ocasión.</span>
+            la{" "}
+            <span className="font-body text-[0.6em] font-light tracking-tight text-cream/65">
+              ocasión.
+            </span>
           </p>
         </div>
 
@@ -83,13 +87,13 @@ export function Footer() {
             <ul className="mt-6 space-y-3 text-[15px] text-cream/85">
               {NAV.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
                     className="group inline-flex items-center gap-2 transition-colors hover:text-cream"
                   >
                     <span className="h-px w-0 bg-cream transition-all duration-500 ease-editorial group-hover:w-4" />
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -150,7 +154,7 @@ export function Footer() {
         {/* Ornament line */}
         <div className="my-12 flex items-center gap-5 md:my-16">
           <span className="h-px flex-1 bg-cream/15" />
-          <span className="font-display text-xs italic text-cream/45">
+          <span className="font-body text-[11px] font-light tracking-[0.04em] text-cream/55">
             Hecho con cariño en Santiago, Chile
           </span>
           <span className="h-px flex-1 bg-cream/15" />
@@ -159,15 +163,15 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="grid grid-cols-1 gap-4 text-[11px] text-cream/55 md:grid-cols-3 md:items-center">
           <p className="md:order-1">
-            Webpay · Mercado Pago · Transferencia
+            Mercado Pago · Transferencia
           </p>
           <p className="md:order-2 md:text-center">
             BlueExpress · Envíos a todo Chile
           </p>
           <div className="flex items-center gap-5 md:order-3 md:justify-end">
             <span>© 2026 Delacosta Studio</span>
-            <a
-              href="#inicio"
+            <Link
+              href="/#inicio"
               className="group inline-flex items-center gap-1.5 text-cream/70 transition-colors hover:text-cream"
               aria-label="Volver arriba"
             >
@@ -177,7 +181,7 @@ export function Footer() {
                 strokeWidth={1.4}
                 className="transition-transform group-hover:-translate-y-0.5"
               />
-            </a>
+            </Link>
           </div>
         </div>
 
