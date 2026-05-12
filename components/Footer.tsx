@@ -29,21 +29,8 @@ export function Footer() {
       </svg>
 
       <div className="container-editorial relative py-20 md:py-24">
-        {/* Statement */}
-        <div className="border-b border-cream/12 pb-14 md:pb-16">
-          <p className="eyebrow text-cream/55">Manifesto</p>
-          <p className="mt-5 max-w-3xl font-display text-[clamp(2rem,5.5vw,4.5rem)] leading-[0.95] text-cream">
-            Tú eres
-            <br />
-            la{" "}
-            <span className="font-body text-[0.6em] font-light tracking-tight text-cream/65">
-              ocasión.
-            </span>
-          </p>
-        </div>
-
         {/* Main grid */}
-        <div className="grid grid-cols-1 gap-14 pt-14 md:grid-cols-12 md:gap-12 md:pt-16">
+        <div className="grid grid-cols-1 gap-14 md:grid-cols-12 md:gap-12">
           {/* Brand */}
           <div className="md:col-span-5">
             <div className="flex items-center gap-4">
