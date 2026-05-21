@@ -64,13 +64,13 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="bg-bone py-24 md:py-32">
+    <section id="faq" className="bg-white py-24 md:py-32">
       <div className="container-editorial grid grid-cols-1 gap-16 lg:grid-cols-12">
         <Reveal className="lg:col-span-4">
-          <p className="eyebrow">Preguntas frecuentes</p>
+          <p className="eyebrow text-olive">Preguntas frecuentes</p>
           <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-ink">
             Lo que{" "}
-            <span className="font-body text-[0.78em] font-light tracking-tight text-navy">
+            <span className="font-body text-[0.78em] font-light tracking-tight text-olive">
               quizás
             </span>{" "}
             te estás preguntando.

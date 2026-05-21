@@ -161,9 +161,9 @@ export function Loader() {
             y: imageLoaded ? 0 : 8,
           }}
           transition={{ duration: 0.7, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 font-body text-sm font-light tracking-[0.08em] text-cream/80 md:text-base"
+          className="mt-6 font-body text-[11px] font-medium uppercase tracking-[0.32em] text-cream/75 md:text-xs"
         >
-          Tú eres la ocasión
+          Estudio · Chile
         </motion.p>
       </motion.div>
 

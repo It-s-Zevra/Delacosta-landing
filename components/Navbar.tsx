@@ -11,11 +11,13 @@ import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
 
 const NAV = [
-  { label: "Catálogo", href: "/#catalogo" },
-  { label: "Proceso", href: "/#proceso" },
-  { label: "Cuidados", href: "/#cuidados" },
+  { label: "Aros", href: "/?cat=Aros#catalogo" },
+  { label: "Collares", href: "/?cat=Collares#catalogo" },
+  { label: "Pulseras", href: "/?cat=Pulseras#catalogo" },
+  { label: "Anillos", href: "/?cat=Anillos#catalogo" },
+  { label: "Conjuntos", href: "/?cat=Conjuntos#catalogo" },
+  { label: "Todo", href: "/?cat=Todo#catalogo" },
   { label: "Preguntas", href: "/preguntas-frecuentes" },
-  { label: "Contacto", href: "/#contacto" },
 ];
 
 const EDITORIAL = [0.7, 0, 0.3, 1] as const;
@@ -44,8 +46,8 @@ export function Navbar() {
         className={cn(
           "sticky top-0 z-40 transition-all duration-500",
           scrolled
-            ? "border-b border-tobacco/15 bg-cream/85 backdrop-blur-md"
-            : "border-b border-transparent bg-cream",
+            ? "border-b border-tobacco/15 bg-bone/85 backdrop-blur-md"
+            : "border-b border-transparent bg-bone",
         )}
       >
         <nav className="container-editorial flex items-center justify-between py-4">
@@ -66,15 +68,15 @@ export function Navbar() {
             </span>
           </Link>
 
-          <ul className="hidden items-center gap-8 md:flex">
+          <ul className="hidden items-center gap-5 md:flex lg:gap-7">
             {NAV.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="group relative text-[12px] font-medium uppercase tracking-[0.16em] text-ink/80 transition-colors hover:text-navy"
+                  className="group relative text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive"
                 >
                   {item.label}
-                  <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-navy transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
+                  <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
                 </Link>
               </li>
             ))}
@@ -112,7 +114,7 @@ function MobileMenu({ close }: { close: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="fixed inset-0 z-50 flex flex-col bg-cream md:hidden"
+      className="fixed inset-0 z-50 flex flex-col bg-bone md:hidden"
     >
       {/* Animated cream curtain that drops in */}
       <motion.div
@@ -120,7 +122,7 @@ function MobileMenu({ close }: { close: () => void }) {
         animate={{ y: "0%" }}
         exit={{ y: "-100%" }}
         transition={{ duration: 0.65, ease: EDITORIAL }}
-        className="absolute inset-0 bg-cream"
+        className="absolute inset-0 bg-bone"
       />
 
       <div className="relative z-10 flex flex-1 flex-col">
@@ -215,7 +217,7 @@ function MobileMenu({ close }: { close: () => void }) {
               </SocialBtn>
             </div>
             <p className="font-body text-[11px] font-light tracking-[0.04em] text-ink/60">
-              Tú eres la ocasión
+              Hecho en Chile
             </p>
           </div>
         </motion.div>

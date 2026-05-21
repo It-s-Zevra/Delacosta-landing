@@ -16,13 +16,13 @@ export default function PreguntasFrecuentesPage() {
     <>
       <Navbar />
       <main>
-        <section className="bg-bone pt-16 pb-6 md:pt-24 md:pb-10">
+        <section className="bg-white pt-16 pb-6 md:pt-24 md:pb-10">
           <div className="container-editorial">
-            <p className="eyebrow">Centro de ayuda</p>
+            <p className="eyebrow text-olive">Centro de ayuda</p>
             <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.5rem,5.5vw,4.25rem)] leading-[1.02] text-ink">
               Preguntas
               <br />
-              <span className="font-body text-[0.72em] font-light tracking-tight text-navy">
+              <span className="font-body text-[0.72em] font-light tracking-tight text-olive">
                 frecuentes.
               </span>
             </h1>

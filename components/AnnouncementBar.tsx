@@ -1,9 +1,8 @@
 export function AnnouncementBar() {
   const items = [
     "Envío gratis sobre $59.990",
-    "Cambios garantizados",
     "3 cuotas sin interés",
-    "Hecho a mano en Chile",
+    "Hecho en Chile",
   ];
 
   return (

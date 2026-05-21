@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Eye, Lock } from "lucide-react";
 import { ASSETS } from "@/lib/assets";
 import { Reveal } from "@/components/Reveal";
 import { ProductModal, type Producto } from "@/components/ProductModal";
 import { cn } from "@/lib/cn";
 
-const FILTROS = ["Todo", "Aros", "Collares", "Pulseras", "Anillos", "Conjuntos"];
+const FILTROS = ["Aros", "Collares", "Pulseras", "Anillos", "Conjuntos", "Todo"];
 
 type ProductoCat = Producto & { categoria: string };
 
@@ -25,7 +26,6 @@ const PRODUCTOS: ProductoCat[] = [
       "Cadena y broche bañados en oro 18k",
       "Largo total 4,5 cm, peso 2,8 g",
       "Empacados a mano en bolsita de algodón",
-      "Garantía de 6 meses contra defectos",
     ],
     available: true,
   },
@@ -59,8 +59,17 @@ const PROXIMAS = [
 ];
 
 export function Catalogo() {
-  const [activo, setActivo] = useState("Todo");
+  const searchParams = useSearchParams();
+  const catParam = searchParams.get("cat");
+  const initialFilter = catParam && FILTROS.includes(catParam) ? catParam : "Todo";
+  const [activo, setActivo] = useState(initialFilter);
   const [selected, setSelected] = useState<Producto | null>(null);
+
+  useEffect(() => {
+    if (catParam && FILTROS.includes(catParam)) {
+      setActivo(catParam);
+    }
+  }, [catParam]);
 
   const productosFiltrados = useMemo(
     () => (activo === "Todo" ? PRODUCTOS : PRODUCTOS.filter((p) => p.categoria === activo)),
@@ -122,8 +131,8 @@ export function Catalogo() {
                 className={cn(
                   "border px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] transition-all",
                   activo === f
-                    ? "border-navy bg-navy text-cream"
-                    : "border-tobacco/30 text-ink hover:border-navy hover:text-navy",
+                    ? "border-olive bg-olive text-cream"
+                    : "border-tobacco/30 text-ink hover:border-olive hover:text-olive",
                 )}
               >
                 {f}
@@ -162,7 +171,7 @@ export function Catalogo() {
                       className="object-cover transition-transform duration-[1.1s] ease-editorial group-hover:scale-[1.06]"
                     />
 
-                    <span className="absolute left-3 top-3 bg-cream px-2.5 py-1 text-[9.5px] font-medium uppercase tracking-[0.16em] text-tobacco">
+                    <span className="absolute left-3 top-3 bg-bone px-2.5 py-1 text-[9.5px] font-medium uppercase tracking-[0.16em] text-olive">
                       Disponible
                     </span>
 

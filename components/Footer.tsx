@@ -6,9 +6,11 @@ import { InstagramIcon, TikTokIcon } from "@/components/icons/Social";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
 
 const NAV = [
-  { label: "Catálogo", href: "/#catalogo" },
-  { label: "Proceso", href: "/#proceso" },
-  { label: "Cuidados", href: "/#cuidados" },
+  { label: "Aros", href: "/?cat=Aros#catalogo" },
+  { label: "Collares", href: "/?cat=Collares#catalogo" },
+  { label: "Pulseras", href: "/?cat=Pulseras#catalogo" },
+  { label: "Anillos", href: "/?cat=Anillos#catalogo" },
+  { label: "Conjuntos", href: "/?cat=Conjuntos#catalogo" },
   { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
   { label: "Contacto", href: "/#contacto" },
 ];

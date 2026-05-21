@@ -53,7 +53,7 @@ export function Modal({
           />
 
           <motion.div
-            className={`relative flex h-full w-full flex-col overflow-hidden bg-cream shadow-[0_30px_80px_-20px_rgba(0,0,0,0.4)] md:h-auto md:max-h-[90dvh] ${SIZES[size]}`}
+            className={`relative flex h-full w-full flex-col overflow-hidden bg-bone shadow-[0_30px_80px_-20px_rgba(0,0,0,0.4)] md:h-auto md:max-h-[90dvh] ${SIZES[size]}`}
             initial={{ y: 24, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 16, opacity: 0, scale: 0.98 }}
@@ -62,7 +62,7 @@ export function Modal({
             <button
               aria-label="Cerrar"
               onClick={onClose}
-              className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-cream/95 text-ink shadow-[0_4px_12px_rgba(0,0,0,0.12)] backdrop-blur transition-colors hover:bg-navy hover:text-cream md:right-4 md:top-4"
+              className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-bone/95 text-ink shadow-[0_4px_12px_rgba(0,0,0,0.12)] backdrop-blur transition-colors hover:bg-olive hover:text-cream md:right-4 md:top-4"
             >
               <X size={20} strokeWidth={1.5} />
             </button>

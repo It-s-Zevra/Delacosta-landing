@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Loader } from "@/components/Loader";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/sections/Hero";
@@ -16,7 +17,9 @@ export default function Page() {
       <Navbar />
       <main>
         <Hero />
-        <Catalogo />
+        <Suspense fallback={null}>
+          <Catalogo />
+        </Suspense>
         <Proceso />
         <HechoAMano />
         <Instagram />

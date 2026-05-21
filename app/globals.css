@@ -24,12 +24,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
-    background-color: var(--color-cream);
+    background-color: var(--color-bone);
     overscroll-behavior-y: none;
   }
 
   body {
-    background-color: var(--color-cream);
+    background-color: var(--color-bone);
     color: var(--color-ink);
     font-family: var(--font-body), system-ui, sans-serif;
     font-size: 16px;

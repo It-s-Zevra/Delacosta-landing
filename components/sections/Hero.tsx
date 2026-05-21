@@ -127,35 +127,21 @@ export function Hero() {
             Manifesto
           </motion.p>
 
-          <motion.h1
+          <motion.p
             variants={reveal}
-            transition={{ duration: 1, ease: EASE }}
-            className="mt-7 font-display text-[clamp(2.85rem,8vw,6.75rem)] leading-[0.94] text-cream"
+            transition={{ duration: 0.9, ease: EASE }}
+            className="mt-8 max-w-xl font-display text-[clamp(1.6rem,3.6vw,2.6rem)] leading-[1.2] text-cream"
           >
-            TÚ ERES
-            <br />
-            LA{" "}
-            <span className="relative inline-block">
-              <span className="font-body text-[0.78em] font-light tracking-tight text-cream/95">
-                ocasión.
-              </span>
-              <motion.span
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 1.7, duration: 1, ease: EASE_CLIP }}
-                className="absolute -bottom-1 left-0 right-2 block h-px origin-left bg-crimson"
-              />
-            </span>
-          </motion.h1>
+            Joyas únicas creadas por chilenas, para ti.
+          </motion.p>
 
           <motion.p
             variants={reveal}
             transition={{ duration: 0.7, ease: EASE }}
-            className="mt-8 max-w-md text-[15px] leading-relaxed text-cream/85 md:text-[17px]"
+            className="mt-6 max-w-md text-[15px] leading-relaxed text-cream/85 md:text-[17px]"
           >
-            Joyas únicas creadas por chilenas, para ti. Diseños hechos a mano
-            que acompañan tu día a día. No necesitas una razón especial para
-            sentirte tú.
+            Diseños hechos a mano que acompañan tu día a día.
+            No necesitas una razón especial para sentirte tú.
           </motion.p>
         </motion.div>
       </motion.div>

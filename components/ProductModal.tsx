@@ -54,8 +54,8 @@ export function ProductModal({
             className="object-cover"
           />
           {!producto.available && (
-            <div className="absolute inset-0 flex items-center justify-center bg-cream/80 backdrop-blur-sm">
-              <span className="font-body text-base font-light tracking-wide text-navy">
+            <div className="absolute inset-0 flex items-center justify-center bg-bone/80 backdrop-blur-sm">
+              <span className="font-body text-base font-light tracking-wide text-olive">
                 Próximamente
               </span>
             </div>

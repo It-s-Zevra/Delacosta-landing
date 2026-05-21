@@ -55,7 +55,7 @@ export function HechoAMano() {
           </p>
           <a
             href="/preguntas-frecuentes"
-            className="mt-10 inline-flex border-b border-navy pb-1 text-[12px] font-medium uppercase tracking-[0.18em] text-navy hover:text-crimson hover:border-crimson"
+            className="mt-10 inline-flex border-b border-olive pb-1 text-[12px] font-medium uppercase tracking-[0.18em] text-olive hover:text-ink hover:border-ink"
           >
             Ver guía completa de cuidados →
           </a>
