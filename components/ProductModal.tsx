@@ -1,32 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { ArrowRight, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Modal } from "./Modal";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
-import { cn } from "@/lib/cn";
-
-export type Producto = {
-  nombre: string;
-  precio: string;
-  img: string;
-  imgHover?: string;
-  descripcion: string;
-  detalles: string[];
-  variantes?: { label: string; value: string }[];
-  available: boolean;
-};
+import { formatCLP } from "@/lib/format";
+import { effectivePrice, isAvailable, type ApiProduct } from "@/lib/api";
+import { useCart } from "@/components/cart/CartProvider";
 
 export function ProductModal({
   producto,
   onClose,
 }: {
-  producto: Producto | null;
+  producto: ApiProduct | null;
   onClose: () => void;
 }) {
-  const [variante, setVariante] = useState<string | null>(null);
-  const open = producto !== null;
+  const { add, openCart } = useCart();
+  const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    setQty(1);
+    setAdded(false);
+  }, [producto?.id]);
 
   if (!producto) {
     return (
@@ -36,110 +33,154 @@ export function ProductModal({
     );
   }
 
-  const message = producto.available
-    ? `${WA_MESSAGES.product(producto.nombre, producto.precio)}${
-        variante ? ` Largo: ${variante}.` : ""
-      }`
-    : WA_MESSAGES.comingSoon(producto.nombre);
+  const available = isAvailable(producto);
+  const price = effectivePrice(producto);
+  const stock = producto.stock ?? 0;
+  const onOffer = producto.precioOferta != null && producto.precio != null;
+
+  const handleAdd = () => {
+    if (!available || price == null) return;
+    add(
+      {
+        id: producto.id,
+        nombre: producto.nombre,
+        precio: price,
+        urlImagen: producto.urlImagen,
+        slug: producto.slug,
+        stock,
+      },
+      qty,
+    );
+    setAdded(true);
+    setTimeout(() => {
+      onClose();
+      openCart();
+    }, 550);
+  };
 
   return (
-    <Modal open={open} onClose={onClose} size="lg">
+    <Modal open onClose={onClose} size="lg">
       <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="relative aspect-4/3 bg-bone md:aspect-auto md:min-h-140">
-          <Image
-            src={producto.img}
-            alt={producto.nombre}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-          />
-          {!producto.available && (
-            <div className="absolute inset-0 flex items-center justify-center bg-bone/80 backdrop-blur-sm">
-              <span className="font-body text-base font-light tracking-wide text-olive">
-                Próximamente
+        <div className="relative aspect-4/3 bg-stone/30 md:aspect-auto md:min-h-140">
+          {producto.urlImagen ? (
+            <Image
+              src={producto.urlImagen}
+              alt={producto.nombre}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <span className="font-display text-2xl text-tobacco/40">
+                {producto.nombre}
               </span>
             </div>
+          )}
+          {!available && (
+            <div className="absolute inset-0 flex items-center justify-center bg-bone/80 backdrop-blur-sm">
+              <span className="font-body text-base font-light tracking-wide text-crimson">
+                Agotado
+              </span>
+            </div>
+          )}
+          {onOffer && available && (
+            <span className="absolute left-3 top-3 bg-crimson px-2.5 py-1 text-[9.5px] font-medium uppercase tracking-[0.16em] text-cream">
+              Oferta
+            </span>
           )}
         </div>
 
         <div className="flex flex-col p-6 pt-8 md:p-12">
           <p className="eyebrow">
-            {producto.available ? "Disponible" : "Agotada · vuelve pronto"}
+            {available ? `Disponible · ${stock} en stock` : "Agotada · vuelve pronto"}
           </p>
           <h3 className="mt-3 font-display text-2xl text-ink md:text-4xl">
             {producto.nombre}
           </h3>
-          <p className="mt-2 text-lg font-semibold text-tobacco md:text-xl">
-            {producto.precio}
-          </p>
+
+          <div className="mt-2 flex items-baseline gap-3">
+            <p className="text-lg font-semibold text-tobacco md:text-xl">
+              {formatCLP(price)}
+            </p>
+            {onOffer && (
+              <p className="text-sm text-tobacco/50 line-through">
+                {formatCLP(producto.precio)}
+              </p>
+            )}
+          </div>
 
           <div className="my-6 h-px w-12 bg-tobacco/30 md:my-7" />
 
-          <p className="text-ink/75 leading-relaxed">{producto.descripcion}</p>
-
-          <ul className="mt-6 space-y-2.5 md:mt-7">
-            {producto.detalles.map((d) => (
-              <li
-                key={d}
-                className="flex items-start gap-3 text-sm text-ink/80"
-              >
-                <Check
-                  size={14}
-                  strokeWidth={1.6}
-                  className="mt-1 shrink-0 text-crimson"
-                />
-                {d}
-              </li>
-            ))}
-          </ul>
-
-          {producto.variantes && producto.available && (
-            <div className="mt-7 md:mt-8">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-tobacco">
-                Largo de cadena
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {producto.variantes.map((v) => (
-                  <button
-                    key={v.value}
-                    onClick={() => setVariante(v.value)}
-                    className={cn(
-                      "border px-4 py-2 text-[12px] font-medium uppercase tracking-[0.14em] transition-colors",
-                      variante === v.value
-                        ? "border-navy bg-navy text-cream"
-                        : "border-tobacco/30 text-ink hover:border-navy",
-                    )}
-                  >
-                    {v.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {producto.descripcion && (
+            <p className="text-ink/75 leading-relaxed">{producto.descripcion}</p>
           )}
 
-          <div className="mt-10">
-            <a
-              href={whatsappLink(message)}
-              target="_blank"
-              rel="noreferrer"
-              onClick={onClose}
-              className="group flex items-center justify-between gap-4 bg-navy px-6 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink"
-            >
-              <span>
-                {producto.available
-                  ? "Pedir por WhatsApp"
-                  : "Avísame cuando salga"}
-              </span>
-              <ArrowRight
-                size={16}
-                strokeWidth={1.5}
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </a>
-            <p className="mt-4 text-center text-[10px] uppercase tracking-[0.22em] text-tobacco/70">
-              Respuesta en menos de 1 hora
-            </p>
-          </div>
+          {producto.materiales.length > 0 && (
+            <ul className="mt-6 space-y-2.5 md:mt-7">
+              {producto.materiales.map((d) => (
+                <li key={d} className="flex items-start gap-3 text-sm text-ink/80">
+                  <Check size={14} strokeWidth={1.6} className="mt-1 shrink-0 text-crimson" />
+                  {d}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {available ? (
+            <div className="mt-9 md:mt-auto md:pt-9">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border border-tobacco/30">
+                  <button
+                    aria-label="Quitar"
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    className="flex h-11 w-11 items-center justify-center text-ink transition-colors hover:bg-olive/10 disabled:opacity-30"
+                    disabled={qty <= 1}
+                  >
+                    <Minus size={15} strokeWidth={1.6} />
+                  </button>
+                  <span className="w-10 text-center text-sm font-semibold text-ink">
+                    {qty}
+                  </span>
+                  <button
+                    aria-label="Agregar"
+                    onClick={() => setQty((q) => Math.min(stock, q + 1))}
+                    className="flex h-11 w-11 items-center justify-center text-ink transition-colors hover:bg-olive/10 disabled:opacity-30"
+                    disabled={qty >= stock}
+                  >
+                    <Plus size={15} strokeWidth={1.6} />
+                  </button>
+                </div>
+                <p className="text-sm text-ink/60">
+                  {formatCLP((price ?? 0) * qty)}
+                </p>
+              </div>
+
+              <button
+                onClick={handleAdd}
+                className="group mt-4 flex w-full items-center justify-between gap-4 bg-navy px-6 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink"
+              >
+                <span>{added ? "Agregado ✓" : "Agregar al carrito"}</span>
+                <ShoppingBag
+                  size={16}
+                  strokeWidth={1.6}
+                  className="transition-transform group-hover:scale-110"
+                />
+              </button>
+            </div>
+          ) : (
+            <div className="mt-9 md:mt-auto md:pt-9">
+              <a
+                href={whatsappLink(WA_MESSAGES.comingSoon(producto.nombre))}
+                target="_blank"
+                rel="noreferrer"
+                onClick={onClose}
+                className="group flex w-full items-center justify-between gap-4 bg-tobacco px-6 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink"
+              >
+                <span>Avísame cuando vuelva</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

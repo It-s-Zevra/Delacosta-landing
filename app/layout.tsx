@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Rufina, Montserrat } from "next/font/google";
 import { ASSETS } from "@/lib/assets";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 const rufina = Rufina({
@@ -127,7 +128,7 @@ export default function RootLayout({
       </head>
       <body>
         <SmoothScroll />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

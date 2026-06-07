@@ -2,30 +2,22 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { Mail, Menu, MessageCircle, ShoppingBag, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Mail, Menu, MessageCircle, ShoppingBag, X } from "lucide-react";
 import { CartModal } from "./CartModal";
 import { InstagramIcon, TikTokIcon } from "./icons/Social";
 import { cn } from "@/lib/cn";
 import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
-
-const NAV = [
-  { label: "Aros", href: "/?cat=Aros#catalogo" },
-  { label: "Collares", href: "/?cat=Collares#catalogo" },
-  { label: "Pulseras", href: "/?cat=Pulseras#catalogo" },
-  { label: "Anillos", href: "/?cat=Anillos#catalogo" },
-  { label: "Conjuntos", href: "/?cat=Conjuntos#catalogo" },
-  { label: "Todo", href: "/?cat=Todo#catalogo" },
-  { label: "Preguntas", href: "/preguntas-frecuentes" },
-];
+import { useCart } from "@/components/cart/CartProvider";
+import { CATEGORIES, useCatalog } from "@/components/catalog/CatalogProvider";
 
 const EDITORIAL = [0.7, 0, 0.3, 1] as const;
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const { count, openCart } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -50,48 +42,71 @@ export function Navbar() {
             : "border-b border-transparent bg-bone",
         )}
       >
-        <nav className="container-editorial flex items-center justify-between py-4">
-          <button
-            className="flex h-9 w-9 items-center justify-center text-ink md:hidden"
-            aria-label="Abrir menú"
-            onClick={() => setOpen(true)}
-          >
-            <Menu size={22} strokeWidth={1.4} />
-          </button>
+        <nav className="container-editorial grid grid-cols-[1fr_auto_1fr] items-center py-4">
+          {/* Left — brand (home) + Inicio */}
+          <div className="flex items-center gap-6">
+            <button
+              className="flex h-9 w-9 items-center justify-center text-ink md:hidden"
+              aria-label="Abrir menú"
+              onClick={() => setOpen(true)}
+            >
+              <Menu size={22} strokeWidth={1.4} />
+            </button>
 
-          <Link href="/#inicio" className="block text-center leading-none">
-            <span className="block font-display text-[20px] font-medium tracking-[0.18em] text-ink md:text-[22px]">
-              DELACOSTA
-            </span>
-            <span className="mt-1 block pl-[0.5em] text-[8.5px] font-medium tracking-[0.5em] text-tobacco">
-              STUDIO
-            </span>
-          </Link>
+            <Link href="/#inicio" className="hidden leading-none md:block" aria-label="Inicio">
+              <span className="block font-display text-[20px] font-medium tracking-[0.18em] text-ink">
+                DELACOSTA
+              </span>
+              <span className="mt-1 block pl-[0.5em] text-[8.5px] font-medium tracking-[0.5em] text-tobacco">
+                STUDIO
+              </span>
+            </Link>
 
-          <ul className="hidden items-center gap-5 md:flex lg:gap-7">
-            {NAV.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="group relative text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive"
-                >
-                  {item.label}
-                  <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+            <Link
+              href="/#inicio"
+              className="group relative hidden text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive lg:block"
+            >
+              Inicio
+              <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
+            </Link>
+          </div>
 
-          <div className="flex items-center text-ink">
+          {/* Center — brand on mobile, Productos dropdown on desktop */}
+          <div className="flex items-center justify-center">
+            <Link href="/#inicio" className="block text-center leading-none md:hidden">
+              <span className="block font-display text-[18px] font-medium tracking-[0.18em] text-ink">
+                DELACOSTA
+              </span>
+              <span className="mt-1 block pl-[0.5em] text-[7.5px] font-medium tracking-[0.5em] text-tobacco">
+                STUDIO
+              </span>
+            </Link>
+            <div className="hidden md:block">
+              <ProductosDropdown />
+            </div>
+          </div>
+
+          {/* Right — Preguntas + cart */}
+          <div className="flex items-center justify-end gap-6">
+            <Link
+              href="/preguntas-frecuentes"
+              className="group relative hidden text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive md:block"
+            >
+              Preguntas
+              <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
+            </Link>
+
             <button
               aria-label="Carrito"
-              onClick={() => setCartOpen(true)}
-              className="relative transition-colors hover:text-navy"
+              onClick={openCart}
+              className="relative text-ink transition-colors hover:text-navy"
             >
               <ShoppingBag size={19} strokeWidth={1.4} />
-              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-crimson text-[9px] font-semibold text-cream">
-                0
-              </span>
+              {count > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-crimson px-1 text-[9px] font-semibold text-cream">
+                  {count}
+                </span>
+              )}
             </button>
           </div>
         </nav>
@@ -101,12 +116,118 @@ export function Navbar() {
         {open && <MobileMenu close={() => setOpen(false)} />}
       </AnimatePresence>
 
-      <CartModal open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartModal />
     </>
   );
 }
 
+/* ----------------------------- Productos dropdown ----------------------------- */
+
+function ProductosDropdown() {
+  const [open, setOpen] = useState(false);
+  const { availability, loading } = useCatalog();
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const onEnter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpen(true);
+  };
+  const onLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 120);
+  };
+
+  return (
+    <div className="relative" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="group flex items-center gap-1.5 text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive"
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        Productos
+        <ChevronDown
+          size={14}
+          strokeWidth={1.6}
+          className={cn("transition-transform duration-300", open && "rotate-180")}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute left-1/2 top-full z-50 mt-4 w-60 -translate-x-1/2 border border-tobacco/15 bg-bone p-2 shadow-[0_24px_60px_-24px_rgba(26,26,26,0.45)]"
+          >
+            <p className="px-3 pb-2 pt-1.5 text-[9.5px] font-medium uppercase tracking-[0.24em] text-tobacco/70">
+              Colección
+            </p>
+            <ul>
+              {CATEGORIES.map((cat) => {
+                const hasStock = loading || availability[cat];
+                return (
+                  <li key={cat}>
+                    {hasStock ? (
+                      <Link
+                        href={`/?cat=${cat}#catalogo`}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-between px-3 py-2.5 text-[13px] text-ink transition-colors hover:bg-olive/10 hover:text-olive"
+                      >
+                        {cat}
+                        <span className="text-tobacco/40 transition-colors group-hover:text-olive">
+                          ›
+                        </span>
+                      </Link>
+                    ) : (
+                      <div
+                        className="flex cursor-not-allowed items-center justify-between px-3 py-2.5 text-[13px] text-ink/35"
+                        title="Sin stock por ahora"
+                      >
+                        {cat}
+                        <span className="text-[8.5px] font-medium uppercase tracking-[0.16em] text-tobacco/45">
+                          Sin stock
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+              <li className="mt-1 border-t border-tobacco/10 pt-1">
+                <Link
+                  href="/?cat=Todo#catalogo"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between px-3 py-2.5 text-[13px] font-medium text-navy transition-colors hover:bg-navy hover:text-cream"
+                >
+                  Ver todo
+                  <span>›</span>
+                </Link>
+              </li>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ----------------------------- Mobile menu ----------------------------- */
+
 function MobileMenu({ close }: { close: () => void }) {
+  const { availability, loading } = useCatalog();
+
+  const links = [
+    { label: "Inicio", href: "/#inicio", muted: false },
+    ...CATEGORIES.map((cat) => ({
+      label: cat,
+      href: `/?cat=${cat}#catalogo`,
+      muted: !(loading || availability[cat]),
+    })),
+    { label: "Todo", href: "/?cat=Todo#catalogo", muted: false },
+    { label: "Preguntas", href: "/preguntas-frecuentes", muted: false },
+  ];
+
   return (
     <motion.div
       key="mobile-menu"
@@ -116,7 +237,6 @@ function MobileMenu({ close }: { close: () => void }) {
       transition={{ duration: 0.35, ease: "easeOut" }}
       className="fixed inset-0 z-50 flex flex-col bg-bone md:hidden"
     >
-      {/* Animated cream curtain that drops in */}
       <motion.div
         initial={{ y: "-100%" }}
         animate={{ y: "0%" }}
@@ -126,7 +246,6 @@ function MobileMenu({ close }: { close: () => void }) {
       />
 
       <div className="relative z-10 flex flex-1 flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
           <Link href="/#inicio" onClick={close} className="block text-center leading-none">
             <span className="block font-display text-[18px] font-medium tracking-[0.18em] text-ink">
@@ -147,40 +266,44 @@ function MobileMenu({ close }: { close: () => void }) {
 
         <div className="h-px bg-tobacco/15" />
 
-        {/* Nav items */}
-        <nav className="flex flex-1 flex-col justify-center px-6">
-          <p className="eyebrow mb-8">Navegación</p>
-          <ul className="space-y-4">
-            {NAV.map((item, i) => (
+        <nav className="flex flex-1 flex-col justify-center overflow-y-auto px-6 py-8">
+          <p className="eyebrow mb-7">Navegación</p>
+          <ul className="space-y-3">
+            {links.map((item, i) => (
               <motion.li
                 key={item.href}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 22 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 12 }}
-                transition={{
-                  duration: 0.7,
-                  delay: 0.25 + i * 0.07,
-                  ease: EDITORIAL,
-                }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.6, delay: 0.2 + i * 0.05, ease: EDITORIAL }}
               >
-                <Link
-                  href={item.href}
-                  onClick={close}
-                  className="group flex items-baseline gap-5"
-                >
-                  <span className="font-display text-xs text-tobacco/60">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="font-display text-[clamp(2.5rem,11vw,4rem)] leading-none text-ink transition-colors group-hover:text-navy">
-                    {item.label}
-                  </span>
-                </Link>
+                {item.muted ? (
+                  <div className="flex items-baseline gap-4 opacity-40">
+                    <span className="font-display text-xs text-tobacco/60">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-[clamp(2rem,9vw,3rem)] leading-none text-ink">
+                      {item.label}
+                    </span>
+                    <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-tobacco/60">
+                      Sin stock
+                    </span>
+                  </div>
+                ) : (
+                  <Link href={item.href} onClick={close} className="group flex items-baseline gap-4">
+                    <span className="font-display text-xs text-tobacco/60">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-[clamp(2rem,9vw,3rem)] leading-none text-ink transition-colors group-hover:text-navy">
+                      {item.label}
+                    </span>
+                  </Link>
+                )}
               </motion.li>
             ))}
           </ul>
         </nav>
 
-        {/* Footer block */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -191,28 +314,16 @@ function MobileMenu({ close }: { close: () => void }) {
           <p className="eyebrow">Encuéntranos</p>
           <div className="mt-4 flex items-center justify-between">
             <div className="flex gap-3">
-              <SocialBtn
-                href={whatsappLink(WA_MESSAGES.generic)}
-                label="WhatsApp"
-              >
+              <SocialBtn href={whatsappLink(WA_MESSAGES.generic)} label="WhatsApp">
                 <MessageCircle size={16} strokeWidth={1.5} />
               </SocialBtn>
-              <SocialBtn
-                href="mailto:delacostastudio@gmail.com"
-                label="Email"
-              >
+              <SocialBtn href="mailto:delacostastudio@gmail.com" label="Email">
                 <Mail size={16} strokeWidth={1.5} />
               </SocialBtn>
-              <SocialBtn
-                href="https://instagram.com/delacosta.studio"
-                label="Instagram"
-              >
+              <SocialBtn href="https://instagram.com/delacosta.studio" label="Instagram">
                 <InstagramIcon size={15} />
               </SocialBtn>
-              <SocialBtn
-                href="https://tiktok.com/@delacosta.studio"
-                label="TikTok"
-              >
+              <SocialBtn href="https://tiktok.com/@delacosta.studio" label="TikTok">
                 <TikTokIcon size={15} />
               </SocialBtn>
             </div>

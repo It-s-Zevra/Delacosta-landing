@@ -1,167 +1,201 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { ASSETS } from "@/lib/assets";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const EASE_CLIP = [0.7, 0, 0.3, 1] as const;
 
 const reveal = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
 };
 
 export function Hero() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const yImage = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const opacityText = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const yText = useTransform(scrollYProgress, [0, 1], ["0%", "-30%"]);
-
   return (
     <section
-      ref={ref}
       id="inicio"
-      className="relative h-[92svh] min-h-150 w-full overflow-hidden bg-ink"
+      className="relative w-full overflow-hidden bg-bone"
     >
-      {/* Image layer with entrance clip + parallax + slow ken-burns zoom */}
-      <motion.div
-        initial={{ clipPath: "inset(0 0 100% 0)" }}
-        animate={{ clipPath: "inset(0 0 0% 0)" }}
-        transition={{ duration: 1.4, delay: 0.2, ease: EASE_CLIP }}
-        className="absolute inset-0"
-      >
-        <motion.div style={{ y: yImage }} className="absolute inset-0">
-          <motion.div
-            initial={{ scale: 1.04 }}
-            animate={{ scale: 1.12 }}
-            transition={{
-              duration: 18,
-              ease: "linear",
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={ASSETS.hero.body}
-              alt="Delacosta Studio · joyas hechas a mano en Chile"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-[62%_center] md:object-[58%_center]"
-            />
-          </motion.div>
-        </motion.div>
-      </motion.div>
-
-      {/* Editorial overlays: smooth horizontal wash + soft bottom anchor */}
+      {/* Soft editorial wash */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(to right, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.55) 25%, rgba(10,10,10,0.28) 55%, rgba(10,10,10,0.08) 85%, rgba(10,10,10,0) 100%)",
+            "radial-gradient(120% 90% at 88% 8%, rgba(244,227,178,0.45) 0%, rgba(251,248,242,0) 55%)",
         }}
       />
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(to top, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.15) 35%, rgba(10,10,10,0) 70%)",
+            "radial-gradient(90% 80% at 0% 100%, rgba(52,79,31,0.07) 0%, rgba(251,248,242,0) 60%)",
         }}
       />
 
-      {/* Side ornament — animated line + rotated brand mark */}
-      <div className="pointer-events-none absolute left-5 top-1/2 hidden -translate-y-1/2 md:block lg:left-8">
-        <motion.div
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ duration: 1.3, delay: 0.6, ease: EASE_CLIP }}
-          className="mx-auto h-36 w-px origin-top bg-cream/50"
-        />
-        <motion.p
-          initial={{ opacity: 0, x: -8 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, delay: 1.6, ease: EASE }}
-          className="mt-5 origin-top-left -rotate-90 translate-x-3 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.34em] text-cream/75"
-        >
-          Delacosta Studio · S/S 2026
-        </motion.p>
-      </div>
-
-      {/* Top-right floating marker */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.4, ease: EASE }}
-        className="pointer-events-none absolute right-6 top-6 hidden items-center gap-3 text-[10px] font-medium uppercase tracking-[0.3em] text-cream/75 md:flex"
+      {/* Oversized ghost word */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-4 top-[18%] hidden select-none font-display text-[22vw] leading-none text-tobacco/[0.05] lg:block"
       >
-        <span className="font-display text-2xl text-cream/90">N°01</span>
-        <span className="block h-px w-8 bg-cream/55" />
-        <span>Capítulo de apertura</span>
-      </motion.div>
+        joya
+      </span>
 
-      {/* Content */}
-      <motion.div
-        style={{ opacity: opacityText, y: yText }}
-        className="container-editorial relative flex h-full flex-col justify-center pt-20 pb-28 md:pt-24 md:pb-32"
-      >
+      <div className="container-editorial relative grid min-h-[88svh] grid-cols-1 items-center gap-12 pb-20 pt-28 md:min-h-[92svh] md:grid-cols-12 md:gap-8 md:pt-32 lg:pb-24">
+        {/* Left — editorial copy */}
         <motion.div
           initial="hidden"
           animate="visible"
-          transition={{ staggerChildren: 0.16, delayChildren: 0.85 }}
-          className="max-w-2xl"
+          transition={{ staggerChildren: 0.12, delayChildren: 0.15 }}
+          className="md:col-span-6 lg:col-span-6"
         >
           <motion.p
             variants={reveal}
             transition={{ duration: 0.7, ease: EASE }}
-            className="flex items-center gap-3 text-[10.5px] font-medium uppercase tracking-[0.34em] text-cream/85"
+            className="flex items-center gap-3 text-[10.5px] font-medium uppercase tracking-[0.32em] text-tobacco"
           >
-            <span className="block h-px w-10 bg-cream/55" />
-            Manifesto
+            <span className="block h-px w-10 bg-tobacco/50" />
+            Joyería de autor · Chile
           </motion.p>
 
-          <motion.p
+          <motion.h1
             variants={reveal}
-            transition={{ duration: 0.9, ease: EASE }}
-            className="mt-8 max-w-xl font-display text-[clamp(1.6rem,3.6vw,2.6rem)] leading-[1.2] text-cream"
+            transition={{ duration: 0.85, ease: EASE }}
+            className="mt-7 font-display text-[clamp(2.6rem,6.4vw,5rem)] leading-[1.02] tracking-[-0.01em] text-ink"
           >
-            Joyas únicas creadas por chilenas, para ti.
-          </motion.p>
+            Joyas únicas,
+            <br />
+            hechas a mano{" "}
+            <span className="relative whitespace-nowrap italic text-navy">
+              para ti
+              <motion.span
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1, delay: 1, ease: EASE_CLIP }}
+                className="absolute -bottom-1 left-0 right-1 block h-[3px] origin-left bg-cream"
+              />
+            </span>
+            .
+          </motion.h1>
 
           <motion.p
             variants={reveal}
             transition={{ duration: 0.7, ease: EASE }}
-            className="mt-6 max-w-md text-[15px] leading-relaxed text-cream/85 md:text-[17px]"
+            className="mt-7 max-w-md text-[15px] leading-relaxed text-ink/70 md:text-[16.5px]"
           >
-            Diseños hechos a mano que acompañan tu día a día.
+            Diseños creados por chilenas, pensados para acompañar tu día a día.
             No necesitas una razón especial para sentirte tú.
           </motion.p>
-        </motion.div>
-      </motion.div>
 
-      {/* Animated scroll indicator */}
+          <motion.div
+            variants={reveal}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="mt-10 flex flex-wrap items-center gap-4"
+          >
+            <Link
+              href="#catalogo"
+              className="group inline-flex items-center gap-3 bg-navy px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink"
+            >
+              Ver colección
+              <ArrowUpRight
+                size={16}
+                strokeWidth={1.6}
+                className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </Link>
+            <Link
+              href="#proceso"
+              className="group inline-flex items-center gap-2 border-b border-tobacco/40 pb-1 text-[12px] font-medium uppercase tracking-[0.16em] text-ink/80 transition-colors hover:border-olive hover:text-olive"
+            >
+              Cómo se hacen
+            </Link>
+          </motion.div>
+
+          <motion.ul
+            variants={reveal}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-2 text-[11px] font-medium uppercase tracking-[0.14em] text-tobacco/80"
+          >
+            <li>Hecho en Chile</li>
+            <li className="hidden h-3 w-px bg-tobacco/30 sm:block" />
+            <li>Perlas de río · Oro · Plata</li>
+            <li className="hidden h-3 w-px bg-tobacco/30 sm:block" />
+            <li>Envíos a todo el país</li>
+          </motion.ul>
+        </motion.div>
+
+        {/* Right — framed portrait */}
+        <div className="relative md:col-span-6 lg:col-span-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.25, ease: EASE }}
+            className="relative mx-auto max-w-md md:ml-auto md:mr-0"
+          >
+            {/* offset frame */}
+            <span className="absolute -left-4 -top-4 hidden h-full w-full border border-olive/40 md:block" />
+
+            <motion.div
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              animate={{ clipPath: "inset(0 0 0% 0)" }}
+              transition={{ duration: 1.3, delay: 0.35, ease: EASE_CLIP }}
+              className="relative aspect-4/5 w-full overflow-hidden bg-stone/40"
+            >
+              <motion.div
+                initial={{ scale: 1.08 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1.6, delay: 0.35, ease: EASE }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={ASSETS.hero.detail}
+                  alt="Delacosta Studio · joyas hechas a mano en Chile"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 45vw"
+                  className="object-cover"
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* floating chapter marker */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 1.1, ease: EASE }}
+              className="absolute -bottom-5 -left-5 flex items-center gap-3 bg-bone px-5 py-3 shadow-[0_18px_40px_-22px_rgba(26,26,26,0.5)]"
+            >
+              <span className="font-display text-3xl leading-none text-navy">
+                N°01
+              </span>
+              <span className="text-[9.5px] font-medium uppercase leading-tight tracking-[0.22em] text-tobacco">
+                Colección
+                <br />
+                S/S 2026
+              </span>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* scroll cue */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.2, duration: 0.9, ease: EASE }}
-        className="absolute inset-x-0 bottom-6 z-10 flex flex-col items-center gap-2 text-cream/85 md:bottom-9"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.6, duration: 0.8 }}
+        className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-tobacco/70 md:flex"
       >
-        <span className="text-[9.5px] font-medium uppercase tracking-[0.36em]">
+        <span className="text-[9.5px] font-medium uppercase tracking-[0.34em]">
           Scroll
         </span>
         <motion.span
-          animate={{ y: [0, 7, 0] }}
+          animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.8, ease: "easeInOut", repeat: Infinity }}
-          className="block"
         >
-          <ChevronDown size={16} strokeWidth={1.5} />
+          <ArrowDown size={15} strokeWidth={1.5} />
         </motion.span>
       </motion.div>
     </section>
