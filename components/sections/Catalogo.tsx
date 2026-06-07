@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Eye, ShoppingBag } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { ProductModal } from "@/components/ProductModal";
 import { ProductImage } from "@/components/ProductImage";
@@ -63,12 +63,12 @@ export function Catalogo() {
 
   return (
     <>
-      <section id="catalogo" className="container-editorial py-24 md:py-32">
+      <section id="catalogo" className="container-editorial py-16 md:py-32">
         <Reveal>
-          <header className="mb-14 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+          <header className="mb-9 flex flex-col items-start justify-between gap-5 md:mb-14 md:flex-row md:items-end md:gap-8">
             <div className="max-w-xl">
               <p className="eyebrow">01 · Colección</p>
-              <h2 className="mt-4 font-display text-[clamp(2.25rem,4.5vw,3.75rem)] leading-[1.05] text-ink">
+              <h2 className="mt-3 font-display text-[clamp(2.25rem,4.5vw,3.75rem)] leading-[1.05] text-ink md:mt-4">
                 Cada pieza,{" "}
                 <span className="font-body text-[0.7em] font-light tracking-tight text-navy">
                   única.
@@ -89,13 +89,13 @@ export function Catalogo() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mb-12 flex flex-wrap gap-2">
+          <div className="mb-8 -mx-[clamp(1.25rem,4vw,4rem)] flex gap-2 overflow-x-auto px-[clamp(1.25rem,4vw,4rem)] pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:mx-0 md:mb-12 md:flex-wrap md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
             {FILTROS.map((f) => (
               <button
                 key={f}
                 onClick={() => setActivo(f)}
                 className={cn(
-                  "border px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] transition-all",
+                  "shrink-0 border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] transition-all md:px-5 md:py-2.5",
                   activo === f
                     ? "border-olive bg-olive text-cream"
                     : "border-tobacco/30 text-ink hover:border-olive hover:text-olive",
@@ -126,10 +126,11 @@ export function Catalogo() {
             onReset={() => setActivo("Todo")}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 md:grid-cols-3 md:gap-y-12">
             {visibles.map((p, i) => {
               const available = isAvailable(p);
               const price = effectivePrice(p);
+              const onOffer = p.precioOferta != null && p.precio != null;
               return (
                 <Reveal key={p.id} delay={(i % 3) * 0.08}>
                   <article className="group">
@@ -149,40 +150,37 @@ export function Catalogo() {
 
                       <span
                         className={cn(
-                          "pointer-events-none absolute left-3 top-3 px-2.5 py-1 text-[9.5px] font-medium uppercase tracking-[0.16em]",
-                          available
-                            ? "bg-bone text-olive"
-                            : "bg-ink/80 text-cream",
+                          "pointer-events-none absolute left-2.5 top-2.5 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.16em] sm:left-3 sm:top-3 sm:text-[9.5px]",
+                          available ? "bg-bone text-olive" : "bg-ink/80 text-cream",
                         )}
                       >
-                        {available ? "Disponible" : "Agotado"}
+                        {available ? (onOffer ? "Oferta" : "Disponible") : "Agotado"}
                       </span>
 
-                      {available ? (
+                      {available && (
                         <button
                           onClick={() => quickAdd(p)}
-                          className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-2 bg-navy py-3.5 text-[11px] font-medium uppercase tracking-[0.18em] text-cream transition-transform duration-500 ease-editorial group-hover:translate-y-0"
+                          aria-label={`Agregar ${p.nombre} al carrito`}
+                          className="absolute bottom-2.5 right-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-navy text-cream shadow-[0_8px_20px_-8px_rgba(1,1,105,0.7)] transition-all hover:bg-ink active:scale-95 sm:bottom-3 sm:right-3 md:h-11 md:w-11 md:opacity-0 md:group-hover:opacity-100"
                         >
-                          <ShoppingBag size={14} strokeWidth={1.5} />
-                          Agregar
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => setSelected(p)}
-                          className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-2 bg-tobacco py-3.5 text-[11px] font-medium uppercase tracking-[0.18em] text-cream transition-transform duration-500 ease-editorial group-hover:translate-y-0"
-                        >
-                          <Eye size={14} strokeWidth={1.5} />
-                          Ver pieza
+                          <Plus size={18} strokeWidth={1.8} />
                         </button>
                       )}
                     </div>
                     <button
                       onClick={() => setSelected(p)}
-                      className="mt-4 flex w-full items-baseline justify-between text-left"
+                      className="mt-3 flex w-full flex-col items-start gap-0.5 text-left md:mt-4 md:flex-row md:items-baseline md:justify-between md:gap-2"
                     >
-                      <h3 className="font-display text-lg text-ink">{p.nombre}</h3>
-                      <p className="text-sm font-semibold text-tobacco">
+                      <h3 className="font-display text-[15px] leading-tight text-ink sm:text-lg">
+                        {p.nombre}
+                      </h3>
+                      <p className="flex items-baseline gap-1.5 text-sm font-semibold text-tobacco">
                         {formatCLP(price)}
+                        {onOffer && (
+                          <span className="text-[11px] font-normal text-tobacco/45 line-through">
+                            {formatCLP(p.precio)}
+                          </span>
+                        )}
                       </p>
                     </button>
                   </article>
