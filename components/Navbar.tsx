@@ -42,11 +42,11 @@ export function Navbar() {
             : "border-b border-transparent bg-bone",
         )}
       >
-        <nav className="container-editorial grid grid-cols-[1fr_auto_1fr] items-center py-4">
-          {/* Left — brand (home) + Inicio */}
-          <div className="flex items-center gap-6">
+        <nav className="container-editorial relative flex items-center justify-between py-4">
+          {/* Left — hamburger (mobile) + brand (home) */}
+          <div className="flex items-center">
             <button
-              className="flex h-9 w-9 items-center justify-center text-ink md:hidden"
+              className="-ml-1 flex h-9 w-9 items-center justify-center text-ink md:hidden"
               aria-label="Abrir menú"
               onClick={() => setOpen(true)}
             >
@@ -54,61 +54,48 @@ export function Navbar() {
             </button>
 
             <Link href="/#inicio" className="hidden leading-none md:block" aria-label="Inicio">
-              <span className="block font-display text-[20px] font-medium tracking-[0.18em] text-ink">
+              <span className="block font-display text-[21px] font-medium tracking-[0.16em] text-ink">
                 DELACOSTA
               </span>
-              <span className="mt-1 block pl-[0.5em] text-[8.5px] font-medium tracking-[0.5em] text-tobacco">
+              <span className="mt-0.5 block pl-[0.4em] text-[8.5px] font-medium tracking-[0.46em] text-tobacco">
                 STUDIO
               </span>
             </Link>
-
-            <Link
-              href="/#inicio"
-              className="group relative hidden text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive lg:block"
-            >
-              Inicio
-              <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
-            </Link>
           </div>
 
-          {/* Center — brand on mobile, Productos dropdown on desktop */}
-          <div className="flex items-center justify-center">
-            <Link href="/#inicio" className="block text-center leading-none md:hidden">
-              <span className="block font-display text-[18px] font-medium tracking-[0.18em] text-ink">
-                DELACOSTA
+          {/* Center brand — mobile only */}
+          <Link
+            href="/#inicio"
+            className="absolute left-1/2 -translate-x-1/2 text-center leading-none md:hidden"
+          >
+            <span className="block font-display text-[18px] font-medium tracking-[0.18em] text-ink">
+              DELACOSTA
+            </span>
+            <span className="mt-1 block pl-[0.5em] text-[7.5px] font-medium tracking-[0.5em] text-tobacco">
+              STUDIO
+            </span>
+          </Link>
+
+          {/* Center links — desktop, grouped together */}
+          <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 md:flex">
+            <NavLink href="/#inicio">Inicio</NavLink>
+            <ProductosDropdown />
+            <NavLink href="/preguntas-frecuentes">Preguntas</NavLink>
+          </div>
+
+          {/* Right — cart */}
+          <button
+            aria-label="Carrito"
+            onClick={openCart}
+            className="relative text-ink transition-colors hover:text-navy"
+          >
+            <ShoppingBag size={20} strokeWidth={1.4} />
+            {count > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-crimson px-1 text-[9px] font-semibold text-cream">
+                {count}
               </span>
-              <span className="mt-1 block pl-[0.5em] text-[7.5px] font-medium tracking-[0.5em] text-tobacco">
-                STUDIO
-              </span>
-            </Link>
-            <div className="hidden md:block">
-              <ProductosDropdown />
-            </div>
-          </div>
-
-          {/* Right — Preguntas + cart */}
-          <div className="flex items-center justify-end gap-6">
-            <Link
-              href="/preguntas-frecuentes"
-              className="group relative hidden text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive md:block"
-            >
-              Preguntas
-              <span className="absolute -bottom-1 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
-            </Link>
-
-            <button
-              aria-label="Carrito"
-              onClick={openCart}
-              className="relative text-ink transition-colors hover:text-navy"
-            >
-              <ShoppingBag size={19} strokeWidth={1.4} />
-              {count > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-crimson px-1 text-[9px] font-semibold text-cream">
-                  {count}
-                </span>
-              )}
-            </button>
-          </div>
+            )}
+          </button>
         </nav>
       </header>
 
@@ -118,6 +105,18 @@ export function Navbar() {
 
       <CartModal />
     </>
+  );
+}
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="group relative text-[11.5px] font-medium uppercase tracking-[0.16em] text-ink/80 transition-colors hover:text-olive"
+    >
+      {children}
+      <span className="absolute -bottom-1.5 left-0 right-0 h-px origin-center scale-x-0 bg-olive transition-transform duration-500 ease-editorial group-hover:scale-x-100" />
+    </Link>
   );
 }
 
@@ -140,7 +139,7 @@ function ProductosDropdown() {
     <div className="relative" onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="group flex items-center gap-1.5 text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink/80 transition-colors hover:text-olive"
+        className="group flex items-center gap-1.5 text-[11.5px] font-medium uppercase tracking-[0.16em] text-ink/80 transition-colors hover:text-olive"
         aria-expanded={open}
         aria-haspopup="true"
       >

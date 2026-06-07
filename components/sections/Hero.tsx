@@ -59,24 +59,6 @@ export function Hero() {
           }}
         />
 
-        {/* Side ornament */}
-        <div className="pointer-events-none absolute left-6 top-1/2 hidden -translate-y-1/2 -translate-x-1 lg:block">
-          <motion.div
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ duration: 1.2, delay: 0.6, ease: EASE_CLIP }}
-            className="mx-auto h-32 w-px origin-top bg-cream/45"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.9, delay: 1.5, ease: EASE }}
-            className="mt-5 origin-top-left -rotate-90 translate-x-3 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.34em] text-cream/70"
-          >
-            Delacosta Studio · S/S 2026
-          </motion.p>
-        </div>
-
         <div className="container-editorial relative flex h-full flex-col justify-center">
           <motion.div
             initial="hidden"
