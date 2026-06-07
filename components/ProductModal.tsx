@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Check, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Modal } from "./Modal";
+import { ProductImage } from "./ProductImage";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
 import { formatCLP } from "@/lib/format";
 import { effectivePrice, isAvailable, type ApiProduct } from "@/lib/api";
@@ -62,21 +62,7 @@ export function ProductModal({
     <Modal open onClose={onClose} size="lg">
       <div className="grid grid-cols-1 md:grid-cols-2">
         <div className="relative aspect-4/3 bg-stone/30 md:aspect-auto md:min-h-140">
-          {producto.urlImagen ? (
-            <Image
-              src={producto.urlImagen}
-              alt={producto.nombre}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <span className="font-display text-2xl text-tobacco/40">
-                {producto.nombre}
-              </span>
-            </div>
-          )}
+          <ProductImage src={producto.urlImagen} alt={producto.nombre} />
           {!available && (
             <div className="absolute inset-0 flex items-center justify-center bg-bone/80 backdrop-blur-sm">
               <span className="font-body text-base font-light tracking-wide text-crimson">

@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Eye, ShoppingBag } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { ProductModal } from "@/components/ProductModal";
+import { ProductImage } from "@/components/ProductImage";
 import { cn } from "@/lib/cn";
 import { formatCLP } from "@/lib/format";
 import { effectivePrice, isAvailable, type ApiProduct } from "@/lib/api";
@@ -140,21 +140,11 @@ export function Catalogo() {
                         className="absolute inset-0 h-full w-full text-left"
                         aria-label={`Ver ${p.nombre}`}
                       >
-                        {p.urlImagen ? (
-                          <Image
-                            src={p.urlImagen}
-                            alt={p.nombre}
-                            fill
-                            sizes="(max-width: 768px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-[1.1s] ease-editorial group-hover:scale-[1.06]"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <span className="px-4 text-center font-display text-lg text-tobacco/40">
-                              {p.nombre}
-                            </span>
-                          </div>
-                        )}
+                        <ProductImage
+                          src={p.urlImagen}
+                          alt={p.nombre}
+                          imgClassName="transition-transform duration-[1.1s] ease-editorial group-hover:scale-[1.06]"
+                        />
                       </button>
 
                       <span

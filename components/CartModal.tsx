@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -17,6 +16,7 @@ import { cn } from "@/lib/cn";
 import { formatCLP } from "@/lib/format";
 import { submitCheckout, type CheckoutResult } from "@/lib/api";
 import { useCart } from "@/components/cart/CartProvider";
+import { ProductImage } from "@/components/ProductImage";
 
 type View = "cart" | "form" | "success";
 
@@ -140,13 +140,7 @@ function CartView({
         {items.map((it) => (
           <div key={it.id} className="flex gap-4 py-5">
             <div className="relative h-20 w-20 shrink-0 overflow-hidden bg-stone/30">
-              {it.urlImagen ? (
-                <Image src={it.urlImagen} alt={it.nombre} fill sizes="80px" className="object-cover" />
-              ) : (
-                <div className="flex h-full items-center justify-center text-[10px] text-tobacco/40">
-                  {it.nombre}
-                </div>
-              )}
+              <ProductImage src={it.urlImagen} alt={it.nombre} />
             </div>
 
             <div className="flex flex-1 flex-col">
