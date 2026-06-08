@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   Check,
@@ -15,8 +16,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { formatCLP } from "@/lib/format";
-import { submitCheckout, type CheckoutResult } from "@/lib/api";
+import { isAvailable, submitCheckout, type ApiProduct, type CheckoutResult } from "@/lib/api";
 import { useCart } from "@/components/cart/CartProvider";
+import { useCatalog } from "@/components/catalog/CatalogProvider";
 import { ProductImage } from "@/components/ProductImage";
 import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
@@ -26,8 +28,6 @@ interface FormValues {
   nombre: string;
   email: string;
   telefono: string;
-  rut: string;
-  metodoEnvio: "BlueExpress" | "Retiro en taller";
   direccion: string;
   comuna: string;
   region: string;
@@ -39,11 +39,15 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 export function CartModal() {
   const { items, subtotal, count, setQty, remove, clear, cartOpen, closeCart } =
     useCart();
+  const { refresh } = useCatalog();
   const [view, setView] = useState<View>("cart");
   const [order, setOrder] = useState<CheckoutResult | null>(null);
 
   useEffect(() => {
-    if (cartOpen) setView((v) => (v === "success" ? v : "cart"));
+    if (!cartOpen) return;
+    setView((v) => (v === "success" ? v : "cart"));
+    refresh(); // pull latest stock so the cart reflects current availability
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartOpen]);
 
   useEffect(() => {
@@ -150,6 +154,31 @@ function CartView({
   onContinue: () => void;
   onClose: () => void;
 }) {
+  const { products, loading, error } = useCatalog();
+  const liveById = useMemo(() => {
+    const m = new Map<string, ApiProduct>();
+    for (const p of products) m.set(p.id, p);
+    return m;
+  }, [products]);
+  // Only enforce stock once we actually have catalog data; the backend
+  // re-validates at checkout regardless.
+  const canValidate = !loading && !error && products.length > 0;
+
+  const rows = items.map((it) => {
+    const live = liveById.get(it.id);
+    const av = live ? isAvailable(live) : false;
+    const liveStock = av ? live?.stock ?? 0 : 0;
+    const maxQty = canValidate ? (av ? liveStock : 0) : it.stock;
+    return {
+      it,
+      unavailable: canValidate && !av,
+      overStock: canValidate && av && it.qty > liveStock,
+      liveStock,
+      maxQty: Math.max(0, maxQty),
+    };
+  });
+  const blocking = rows.some((r) => r.unavailable || r.overStock);
+
   if (items.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center px-8 text-center">
@@ -185,8 +214,8 @@ function CartView({
         data-lenis-prevent
         className="flex-1 divide-y divide-tobacco/10 overflow-y-auto overscroll-contain px-6"
       >
-        {items.map((it) => (
-          <div key={it.id} className="flex gap-4 py-5">
+        {rows.map(({ it, unavailable, overStock, liveStock, maxQty }) => (
+          <div key={it.id} className={cn("flex gap-4 py-5", unavailable && "opacity-60")}>
             <div className="relative h-20 w-20 shrink-0 overflow-hidden bg-stone/30">
               <ProductImage src={it.urlImagen} alt={it.nombre} />
             </div>
@@ -204,12 +233,22 @@ function CartView({
               </div>
               <p className="mt-0.5 text-sm text-tobacco">{formatCLP(it.precio)}</p>
 
+              {(unavailable || overStock) && (
+                <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-crimson">
+                  <AlertTriangle size={12} strokeWidth={1.8} className="shrink-0" />
+                  {unavailable
+                    ? "Ya no está disponible · quítala para continuar"
+                    : `Solo quedan ${liveStock} en stock`}
+                </p>
+              )}
+
               <div className="mt-auto flex items-center justify-between pt-3">
-                <div className="flex items-center border border-tobacco/30">
+                <div className={cn("flex items-center border border-tobacco/30", unavailable && "opacity-50")}>
                   <button
                     aria-label="Quitar uno"
                     onClick={() => setQty(it.id, it.qty - 1)}
-                    className="flex h-8 w-8 items-center justify-center text-ink transition-colors hover:bg-olive/10"
+                    disabled={unavailable}
+                    className="flex h-8 w-8 items-center justify-center text-ink transition-colors hover:bg-olive/10 disabled:opacity-30"
                   >
                     <Minus size={13} strokeWidth={1.6} />
                   </button>
@@ -217,13 +256,22 @@ function CartView({
                   <button
                     aria-label="Agregar uno"
                     onClick={() => setQty(it.id, it.qty + 1)}
-                    disabled={it.qty >= it.stock}
+                    disabled={unavailable || it.qty >= maxQty}
                     className="flex h-8 w-8 items-center justify-center text-ink transition-colors hover:bg-olive/10 disabled:opacity-30"
                   >
                     <Plus size={13} strokeWidth={1.6} />
                   </button>
                 </div>
-                <p className="text-sm font-semibold text-ink">{formatCLP(it.precio * it.qty)}</p>
+                {overStock ? (
+                  <button
+                    onClick={() => setQty(it.id, liveStock)}
+                    className="text-[11px] font-medium uppercase tracking-[0.12em] text-navy underline underline-offset-2 hover:text-crimson"
+                  >
+                    Ajustar a {liveStock}
+                  </button>
+                ) : (
+                  <p className="text-sm font-semibold text-ink">{formatCLP(it.precio * it.qty)}</p>
+                )}
               </div>
             </div>
           </div>
@@ -237,12 +285,20 @@ function CartView({
           </span>
           <span className="font-display text-2xl text-ink">{formatCLP(subtotal)}</span>
         </div>
-        <p className="mt-1.5 text-[11px] text-ink/50">
-          El envío se coordina al confirmar el pedido.
-        </p>
+        {blocking ? (
+          <p className="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-crimson">
+            <AlertTriangle size={12} strokeWidth={1.8} className="shrink-0" />
+            Ajusta o quita las piezas sin stock para continuar.
+          </p>
+        ) : (
+          <p className="mt-1.5 text-[11px] text-ink/50">
+            El envío se coordina al confirmar el pedido.
+          </p>
+        )}
         <button
           onClick={onContinue}
-          className="group mt-4 flex w-full items-center justify-between gap-4 bg-navy px-6 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink"
+          disabled={blocking}
+          className="group mt-4 flex w-full items-center justify-between gap-4 bg-navy px-6 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-cream transition-colors hover:bg-ink disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-navy"
         >
           Continuar con mis datos
           <ArrowRight size={16} strokeWidth={1.5} className="transition-transform group-hover:translate-x-1" />
@@ -268,34 +324,29 @@ function FormView({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
-  } = useForm<FormValues>({ defaultValues: { metodoEnvio: "BlueExpress" } });
+  } = useForm<FormValues>();
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const metodoEnvio = watch("metodoEnvio");
-  const conEnvio = metodoEnvio === "BlueExpress";
 
   const onSubmit = async (v: FormValues) => {
     setSubmitting(true);
     setApiError(null);
     try {
-      const direccionEnvio = conEnvio
-        ? [v.direccion, v.comuna, v.region].filter(Boolean).join(", ")
-        : "Retiro en taller";
+      const direccionEnvio = [v.direccion, v.comuna, v.region]
+        .filter(Boolean)
+        .join(", ");
       const order = await submitCheckout({
         cliente: {
           nombre: v.nombre,
           email: v.email || undefined,
           telefono: v.telefono || undefined,
-          rut: v.rut || undefined,
-          direccion: conEnvio ? v.direccion : undefined,
-          comuna: conEnvio ? v.comuna : undefined,
-          region: conEnvio ? v.region : undefined,
+          direccion: v.direccion || undefined,
+          comuna: v.comuna || undefined,
+          region: v.region || undefined,
           origen: "Web",
         },
         items: items.map((i) => ({ productId: i.id, cantidad: i.qty })),
-        metodoEnvio: v.metodoEnvio,
         direccionEnvio,
         notas: v.notas || undefined,
       });
@@ -348,62 +399,39 @@ function FormView({
             />
           </Field>
           <Field label="WhatsApp / Teléfono" error={errors.telefono?.message}>
-            <input {...register("telefono")} className={inputCls} placeholder="+56 9 1234 5678" />
+            <input
+              {...register("telefono", {
+                required: "Tu teléfono es obligatorio",
+                minLength: { value: 8, message: "Teléfono inválido" },
+              })}
+              className={inputCls}
+              placeholder="+56 9 1234 5678"
+            />
           </Field>
-          <Field label="RUT (opcional)">
-            <input {...register("rut")} className={inputCls} placeholder="12.345.678-9" />
-          </Field>
-        </div>
-
-        <div>
-          <p className="mb-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-tobacco">
-            Entrega
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {(["BlueExpress", "Retiro en taller"] as const).map((m) => (
-              <label
-                key={m}
-                className={cn(
-                  "cursor-pointer border px-4 py-3 text-center text-[12px] font-medium uppercase tracking-[0.1em] transition-colors",
-                  metodoEnvio === m
-                    ? "border-olive bg-olive text-cream"
-                    : "border-tobacco/30 text-ink hover:border-olive",
-                )}
-              >
-                <input type="radio" value={m} {...register("metodoEnvio")} className="sr-only" />
-                {m === "BlueExpress" ? "Envío BlueExpress" : "Retiro en taller"}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {conEnvio && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <Field label="Dirección" error={errors.direccion?.message}>
-                <input
-                  {...register("direccion", { required: conEnvio ? "Ingresa tu dirección" : false })}
-                  className={inputCls}
-                  placeholder="Av. Siempre Viva 742, depto 3"
-                />
-              </Field>
-            </div>
-            <Field label="Comuna" error={errors.comuna?.message}>
+          <div className="sm:col-span-2">
+            <Field label="Dirección" error={errors.direccion?.message}>
               <input
-                {...register("comuna", { required: conEnvio ? "Ingresa tu comuna" : false })}
+                {...register("direccion", { required: "Ingresa tu dirección" })}
                 className={inputCls}
-                placeholder="Providencia"
-              />
-            </Field>
-            <Field label="Región" error={errors.region?.message}>
-              <input
-                {...register("region", { required: conEnvio ? "Ingresa tu región" : false })}
-                className={inputCls}
-                placeholder="Metropolitana"
+                placeholder="Av. Siempre Viva 742, depto 3"
               />
             </Field>
           </div>
-        )}
+          <Field label="Comuna" error={errors.comuna?.message}>
+            <input
+              {...register("comuna", { required: "Ingresa tu comuna" })}
+              className={inputCls}
+              placeholder="Providencia"
+            />
+          </Field>
+          <Field label="Región" error={errors.region?.message}>
+            <input
+              {...register("region", { required: "Ingresa tu región" })}
+              className={inputCls}
+              placeholder="Metropolitana"
+              />
+            </Field>
+          </div>
 
         <Field label="Notas (opcional)">
           <textarea

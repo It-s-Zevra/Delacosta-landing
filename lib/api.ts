@@ -95,7 +95,17 @@ export function isAvailable(p: ApiProduct): boolean {
   return p.estado === "Activo" && (p.stock ?? 0) > 0;
 }
 
-/** Effective price (offer price wins). */
+/** A real offer only if the offer price is actually lower than the base price. */
+export function isOnOffer(p: ApiProduct): boolean {
+  return (
+    p.precioOferta != null &&
+    p.precio != null &&
+    p.precioOferta < p.precio
+  );
+}
+
+/** Effective price (valid offer wins, otherwise base price). */
 export function effectivePrice(p: ApiProduct): number | null {
-  return p.precioOferta ?? p.precio;
+  if (isOnOffer(p)) return p.precioOferta;
+  return p.precio ?? p.precioOferta;
 }

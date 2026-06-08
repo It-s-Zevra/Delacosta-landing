@@ -8,7 +8,7 @@ import { ProductModal } from "@/components/ProductModal";
 import { ProductImage } from "@/components/ProductImage";
 import { cn } from "@/lib/cn";
 import { formatCLP } from "@/lib/format";
-import { effectivePrice, isAvailable, type ApiProduct } from "@/lib/api";
+import { effectivePrice, isAvailable, isOnOffer, type ApiProduct } from "@/lib/api";
 import { CATEGORIES, useCatalog } from "@/components/catalog/CatalogProvider";
 import { useCart } from "@/components/cart/CartProvider";
 
@@ -130,7 +130,7 @@ export function Catalogo() {
             {visibles.map((p, i) => {
               const available = isAvailable(p);
               const price = effectivePrice(p);
-              const onOffer = p.precioOferta != null && p.precio != null;
+              const onOffer = isOnOffer(p);
               return (
                 <Reveal key={p.id} delay={(i % 3) * 0.08}>
                   <article className="group">

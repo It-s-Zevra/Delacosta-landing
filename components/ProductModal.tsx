@@ -6,7 +6,7 @@ import { Modal } from "./Modal";
 import { ProductImage } from "./ProductImage";
 import { WA_MESSAGES, whatsappLink } from "@/lib/whatsapp";
 import { formatCLP } from "@/lib/format";
-import { effectivePrice, isAvailable, type ApiProduct } from "@/lib/api";
+import { effectivePrice, isAvailable, isOnOffer, type ApiProduct } from "@/lib/api";
 import { useCart } from "@/components/cart/CartProvider";
 
 export function ProductModal({
@@ -36,7 +36,7 @@ export function ProductModal({
   const available = isAvailable(producto);
   const price = effectivePrice(producto);
   const stock = producto.stock ?? 0;
-  const onOffer = producto.precioOferta != null && producto.precio != null;
+  const onOffer = isOnOffer(producto);
 
   const handleAdd = () => {
     if (!available || price == null) return;
